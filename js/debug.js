@@ -37,6 +37,15 @@ const Debug = (() => {
         { label: '+50', fn: () => State.setStats({ click: State.get().clickPower + 50, auto: State.get().autoRate }) },
       ],
     },
+    {
+      title: 'Layout',
+      icon: 'layout',
+      actions: [
+        { label: 'Single', fn: () => UI.setLayout('single') },
+        { label: 'Double', fn: () => UI.setLayout('double') },
+        { label: 'Quad',   fn: () => UI.setLayout('quad') },
+      ],
+    },
   ];
 
   const init = () => {
