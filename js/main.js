@@ -34,7 +34,8 @@ const Main = (() => {
     UI.flashKey();
 
     if (pages > 0) {
-      UI.clearFolio();
+      const layouts = Object.keys(Config.FOLIO_LAYOUTS);
+      UI.setLayout(layouts[Math.floor(Math.random() * layouts.length)]);
       UI.spawnFloat(
         window.innerWidth * 0.35,
         window.innerHeight * 0.5,
@@ -67,7 +68,8 @@ const Main = (() => {
       if (autoRate <= 0) return;
       const { pages } = State.addLetters(autoRate / (1000/Config.AUTO_TICK_MS));
       if (pages > 0) {
-        UI.clearFolio();
+        const layouts = Object.keys(Config.FOLIO_LAYOUTS);
+        UI.setLayout(layouts[Math.floor(Math.random() * layouts.length)]);
         if (State.canBind()) UI.showToast('Codex complete — bind it in the sidebar!');
       }
       UI.refreshStats();
@@ -109,6 +111,7 @@ const Main = (() => {
     infoPanel.addEventListener('click', e => e.stopPropagation());
 
     Upgrades.recompute();
+    UI.initRules();
     refresh();
     startLoop();
   };

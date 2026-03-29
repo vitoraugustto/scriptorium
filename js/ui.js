@@ -16,9 +16,39 @@ const UI = (() => {
     return n+' g';
   };
   const $ = (id) => document.getElementById(id);
+  const svgEl = (tag) => document.createElementNS('http://www.w3.org/2000/svg', tag);
+
+  // ── Active layout ────────────────────────────────────────────
+  let _layout = Config.FOLIO_LAYOUTS.single;
+
+  const setLayout = (name) => {
+    _layout = Config.FOLIO_LAYOUTS[name];
+    _renderRules();
+    _measureCapacity();
+    clearFolio();
+  };
+
+  // ── Ruled lines & margins (redrawn when layout changes) ──────
+  const _renderRules = () => {
+    const g = $('js-folio-rules');
+    g.innerHTML = '';
+    for (const r of _layout.rules) {
+      if (!r.red && !r.marg) continue; // skip horizontal ruled lines
+      const el = svgEl('line');
+      el.setAttribute('x1', r.x1); el.setAttribute('y1', r.y1);
+      el.setAttribute('x2', r.x2); el.setAttribute('y2', r.y2);
+      if (r.red) {
+        el.setAttribute('stroke', 'rgba(139,58,26,0.45)');
+        el.setAttribute('stroke-width', '0.8');
+      } else {
+        el.setAttribute('stroke', 'rgba(61,48,24,0.18)');
+        el.setAttribute('stroke-width', '0.6');
+      }
+      g.appendChild(el);
+    }
+  };
 
   // ── Folio text — line-by-line ────────────────────────────────
-  const F = Config.FOLIO;
   let _words=[], _lines=[], _lastChars=-1, _buf='';
 
   const _refill = () => {
@@ -33,10 +63,10 @@ const UI = (() => {
   };
 
   const _measureText = (str) => {
-    const svg = document.getElementById('js-folio');
-    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    const svg = $('js-folio');
+    const t = svgEl('text');
     t.setAttribute('font-family','IM Fell English, serif');
-    t.setAttribute('font-size', F.fontSize);
+    t.setAttribute('font-size', _FONT_SIZE);
     t.setAttribute('font-style','italic');
     t.setAttribute('visibility','hidden');
     t.textContent = str;
@@ -46,33 +76,67 @@ const UI = (() => {
     return w;
   };
 
+  const _fitLine = (colW) => {
+    while (_buf.length < 200) _buf += ' ' + _nextWord();
+    _buf = _buf.trimStart();
+    let lo = 1, hi = _buf.length, fit = 1;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if (_measureText(_buf.slice(0, mid)) <= colW) { fit = mid; lo = mid + 1; }
+      else hi = mid - 1;
+    }
+    let line, rest;
+    if (_buf[fit] === ' ' || _buf[fit - 1] === ' ') {
+      line = _buf.slice(0, fit).trimEnd();
+      rest = _buf.slice(fit).trimStart();
+    } else {
+      line = _buf.slice(0, fit - 1) + '-';
+      rest = _buf.slice(fit - 1);
+    }
+    _buf = rest;
+    return line;
+  };
+
   const _buildLines = (target) => {
     let cached = _lines.reduce((s,l)=>s+l.length, 0);
     if (cached >= target) return;
-    while (cached < target && _lines.length < F.totalLines) {
-      const capActive = (State.get().saltLevels['s_capital'] || 0) > 0;
-      const narrow  = capActive && _lines.length < 3;
-      const maxW    = narrow ? (F.xEnd - F.xCapEnd) : F.lineW;
-      while (_buf.length < 200) _buf += ' ' + _nextWord();
-      _buf = _buf.trimStart();
-      let lo = 1, hi = _buf.length, fit = 1;
-      while (lo <= hi) {
-        const mid = (lo + hi) >> 1;
-        if (_measureText(_buf.slice(0, mid)) <= maxW) { fit = mid; lo = mid + 1; }
-        else hi = mid - 1;
-      }
-      let line, rest;
-      if (_buf[fit] === ' ' || _buf[fit - 1] === ' ') {
-        line = _buf.slice(0, fit).trimEnd();
-        rest = _buf.slice(fit).trimStart();
-      } else {
-        line = _buf.slice(0, fit - 1) + '-';
-        rest = _buf.slice(fit - 1);
-      }
-      _buf = rest;
+    const L = _layout;
+    const capActive = L.type === 'single' && (State.get().saltLevels['s_capital'] || 0) > 0;
+    const totalSlots = L.slots.reduce((s, sl) => s + sl.lines, 0);
+
+    // find current slot position once, then advance inline
+    let slotIdx = 0, slotLine = _lines.length;
+    for (const sl of L.slots) {
+      if (slotLine < sl.lines) break;
+      slotLine -= sl.lines;
+      slotIdx++;
+    }
+
+    while (cached < target && _lines.length < totalSlots) {
+      const sl = L.slots[slotIdx];
+      const narrow = capActive && slotIdx === 0 && slotLine < 3;
+      const colW = narrow ? (sl.xEnd - L.xCapEnd) : (sl.xEnd - sl.xStart);
+      const line = _fitLine(colW);
       _lines.push(line);
       cached += line.length;
+      slotLine++;
+      if (slotLine >= sl.lines) { slotIdx++; slotLine = 0; }
     }
+  };
+
+  const _FONT_SIZE = 6.2; // fixed — never changes with layout
+
+  const _makeTextEl = (x, y, display, opacity) => {
+    const t = svgEl('text');
+    t.setAttribute('x', x);
+    t.setAttribute('y', y);
+    t.setAttribute('font-family','IM Fell English, serif');
+    t.setAttribute('font-size', _FONT_SIZE);
+    t.setAttribute('font-style','italic');
+    t.setAttribute('fill','#1e1608');
+    t.setAttribute('opacity', opacity);
+    t.textContent = display;
+    return t;
   };
 
   const refreshFolio = () => {
@@ -83,13 +147,14 @@ const UI = (() => {
     const g = $('js-folio-text');
     g.innerHTML = '';
 
-    // ── capital ───────────────────────────────────────────────
+    // ── capital (single layout only) ─────────────────────────
     const capLetter = $('js-cap-letter');
     const capBox    = $('js-cap-box');
-    const capLvl    = State.get().saltLevels['s_capital']   || 0;
-    const capLvl2   = State.get().saltLevels['s_capital2']  || 0;
+    const capLvl    = State.get().saltLevels['s_capital']  || 0;
+    const capLvl2   = State.get().saltLevels['s_capital2'] || 0;
     if (capLetter) {
-      if (capLvl > 0 && chars > 0) {
+      const showCap = capLvl > 0 && chars > 0 && _layout.type === 'single';
+      if (showCap) {
         const first = _lines[0] ? _lines[0][0].toUpperCase() : 'V';
         capLetter.textContent = first;
         capLetter.setAttribute('fill','rgba(139,58,26,0.82)');
@@ -106,42 +171,38 @@ const UI = (() => {
     if (!chars) return;
 
     _buildLines(chars);
-
+    const L = _layout;
+    const capActive = capLvl > 0 && chars > 0 && L.type === 'single';
     let rem = chars;
-    for (let li=0; li<_lines.length && li<F.totalLines; li++) {
-      const line = _lines[li]; if(!line||rem<=0) break;
-      const isComplete = rem >= line.length;
-      const display    = isComplete ? line : line.slice(0,rem);
-      const capActive  = capLvl > 0 && chars > 0;
-      const x = (li < 3 && capActive) ? 58 : F.xStart;
-      const y = F.yFirst + li * F.yStep;
-      const t = document.createElementNS('http://www.w3.org/2000/svg','text');
-      t.setAttribute('x', x);
-      t.setAttribute('y', y);
-      t.setAttribute('font-family','IM Fell English, serif');
-      t.setAttribute('font-size', F.fontSize);
-      t.setAttribute('font-style','italic');
-      t.setAttribute('fill','#1e1608');
-      t.setAttribute('opacity', isComplete ? '0.76' : '0.38');
-      t.textContent = display;
-      g.appendChild(t);
-      rem -= line.length;
+    let lineIdx = 0;
+
+    for (const sl of L.slots) {
+      for (let i = 0; i < sl.lines; i++, lineIdx++) {
+        const line = _lines[lineIdx]; if (!line || rem <= 0) break;
+        const isComplete = rem >= line.length;
+        const display    = isComplete ? line : line.slice(0, rem);
+        const narrow     = capActive && lineIdx === 0 && i < 3;
+        const x = narrow ? L.xCapEnd : sl.xStart;
+        const y = sl.yFirst + i * sl.yStep;
+        g.appendChild(_makeTextEl(x, y, display, isComplete ? '0.76' : '0.38'));
+        rem -= line.length;
+      }
+      if (rem <= 0) break;
     }
   };
 
   const clearFolio = () => {
-    _lastChars=-1; _lines=[]; _words=[]; _buf=''; _refill(); refreshFolio();
+    _lastChars=-1; _lines=[]; _words=[]; _buf=''; _refill();
+    refreshFolio();
   };
 
   // ── Stats ─────────────────────────────────────────────────────
   const refreshStats = () => {
     const s = State.get();
 
-    // titlebar
     $('js-gold').textContent = fmt(s.gold);
     $('js-salt').textContent = fmtSalt(s.salt);
 
-    // info panel
     const title = Config.SCRIBE_TITLES[Math.min(s.codices, Config.SCRIBE_TITLES.length-1)];
     $('js-scribe-title').textContent = title;
     $('js-info-gold').textContent    = fmt(s.gold);
@@ -151,17 +212,16 @@ const UI = (() => {
     $('js-info-click').textContent   = fmt(s.clickPower);
     $('js-info-bonus').textContent   = `+${Math.round((s.saltBonus-1)*100)}%`;
 
-    // progress
-    const pagePct  = (s.letters / Config.LETTERS_PER_PAGE * 100).toFixed(1);
+    const lpp = State.getPageCapacity();
+    const pagePct  = (s.letters / lpp * 100).toFixed(1);
     const codexPct = Math.min((s.currentPage-1) / Config.PAGES_PER_CODEX * 100, 100);
     $('js-prog-page').style.width  = pagePct + '%';
     $('js-prog-codex').style.width = codexPct + '%';
     $('js-prog-page-stat').textContent  =
-      `${fmt(s.letters)} / ${fmt(Config.LETTERS_PER_PAGE)}`;
+      `${fmt(s.letters)} / ${fmt(lpp)}`;
     $('js-prog-codex-stat').textContent =
       `p. ${Math.min(s.currentPage, Config.PAGES_PER_CODEX).toLocaleString()} / ${Config.PAGES_PER_CODEX.toLocaleString()}`;
 
-    // codex button
     const can = State.canBind();
     $('js-codex-btn').disabled = !can;
     const left = Math.max(0, Config.PAGES_PER_CODEX - s.currentPage + 1);
@@ -237,6 +297,29 @@ const UI = (() => {
     _tt=setTimeout(()=>el.classList.remove('show'),2400);
   };
 
+  const _measureCapacity = () => {
+    // Measure real capacity by fitting actual lines for each slot.
+    // Uses a throwaway buffer so the live _buf is not disturbed.
+    const savedBuf = _buf;
+    _buf = '';
+    while (_buf.length < 400) _buf += ' ' + _nextWord();
+    _buf = _buf.trimStart();
+
+    let total = 0;
+    for (const sl of _layout.slots) {
+      const colW = sl.xEnd - sl.xStart;
+      for (let li = 0; li < sl.lines; li++) {
+        const line = _fitLine(colW);
+        total += line.length;
+      }
+    }
+
+    _buf = savedBuf;
+    State.setPageCapacity(total);
+  };
+
+  const initRules = () => { _renderRules(); _measureCapacity(); };
+
   return { refreshStats, refreshUpgrades, refreshFolio, clearFolio,
-           flashKey, spawnFloat, showToast, fmt, fmtSalt };
+           flashKey, spawnFloat, showToast, fmt, fmtSalt, setLayout, initRules };
 })();
