@@ -163,6 +163,16 @@ const Config = (() => {
       effect: 'clickAdd',
       val: 1,
     },
+    {
+      id: 'g_ruling',
+      name: 'Parchment Ruling',
+      desc: 'Lines ruled into the vellum guide a denser hand — each page yields more',
+      baseCost: 10,
+      costMult: 2.0,
+      max: 5,
+      effect: 'pageAdd',
+      val: 1,
+    },
   ];
 
   const SALT_UPGRADES = [

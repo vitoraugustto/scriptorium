@@ -12,7 +12,7 @@ const State = (() => {
     currentPage:1, codices:0,
     saltBonus:1.0, startGold:5, goldPerPage:0,
     autoPermMult:1.0, clickPermMult:1.0,
-    clickPower:1, autoRate:0,
+    clickPower:1, autoRate:0, pageBonus:0,
     goldLevels:{}, saltLevels:{},
   };
   _d.gold = 0;
@@ -28,7 +28,7 @@ const State = (() => {
     while (_d.letters >= _lettersPerPage) {
       _d.letters -= _lettersPerPage;
       pages++;
-      const gain = Math.ceil((_d.currentPage + _d.goldPerPage) * _d.saltBonus);
+      const gain = Math.ceil((1 + _d.goldPerPage + _d.pageBonus) * _d.saltBonus);
       _d.gold += gain; _d.totalGold += gain; gold += gain;
       _d.currentPage++;
     }
@@ -39,7 +39,7 @@ const State = (() => {
   const spendSalt = (n) => { _d.salt -= n; };
   const addGold   = (n) => { _d.gold += n; _d.totalGold += n; };
   const addSalt   = (n) => { _d.salt += n; _d.totalSalt += n; };
-  const setStats  = (s) => { _d.clickPower=s.click; _d.autoRate=s.auto; };
+  const setStats  = (s) => { _d.clickPower=s.click; _d.autoRate=s.auto; _d.pageBonus=s.pageBonus??_d.pageBonus; };
   const levelUpGold = (id) => { _d.goldLevels[id]++; };
   const levelUpSalt = (id) => { _d.saltLevels[id]++; };
   const canBind = () => _d.currentPage > Config.PAGES_PER_CODEX;
@@ -77,7 +77,7 @@ const State = (() => {
     _d.currentPage=1; _d.codices=0;
     _d.saltBonus=1.0; _d.startGold=0; _d.goldPerPage=0;
     _d.autoPermMult=1.0; _d.clickPermMult=1.0;
-    _d.clickPower=1; _d.autoRate=0;
+    _d.clickPower=1; _d.autoRate=0; _d.pageBonus=0;
     Config.GOLD_UPGRADES.forEach(u => { _d.goldLevels[u.id]=0; });
     Config.SALT_UPGRADES.forEach(u => { _d.saltLevels[u.id]=0; });
   };

@@ -8,16 +8,18 @@ const Upgrades = (() => {
 
   const recompute = () => {
     const { goldLevels, saltBonus, autoPermMult, clickPermMult } = State.get();
-    let ca=0, cm=1, aa=0;
+    let ca=0, cm=1, aa=0, pa=0;
     Config.GOLD_UPGRADES.forEach(u => {
       const l=goldLevels[u.id]; if(!l) return;
       if(u.effect==='clickAdd')  ca += u.val*l;
       if(u.effect==='clickMult') cm *= Math.pow(u.val,l);
       if(u.effect==='autoAdd')   aa += u.val*l;
+      if(u.effect==='pageAdd')   pa += u.val*l;
     });
     State.setStats({
-      click: Math.max(1, Math.round((1 + ca) * cm * clickPermMult)),
-      auto:  Math.round(aa * autoPermMult * saltBonus),
+      click:     Math.max(1, Math.round((1 + ca) * cm * clickPermMult)),
+      auto:      Math.round(aa * autoPermMult * saltBonus),
+      pageBonus: pa,
     });
   };
 

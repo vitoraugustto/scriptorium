@@ -126,14 +126,14 @@ const UI = (() => {
 
   const _FONT_SIZE = 6.2; // fixed — never changes with layout
 
-  const _makeTextEl = (x, y, display, opacity) => {
+  const _makeTextEl = (x, y, display, opacity, red=false) => {
     const t = svgEl('text');
     t.setAttribute('x', x);
     t.setAttribute('y', y);
     t.setAttribute('font-family','IM Fell English, serif');
     t.setAttribute('font-size', _FONT_SIZE);
     t.setAttribute('font-style','italic');
-    t.setAttribute('fill','#1e1608');
+    t.setAttribute('fill', red ? '#8b3a1a' : '#1e1608');
     t.setAttribute('opacity', opacity);
     t.textContent = display;
     return t;
@@ -173,6 +173,7 @@ const UI = (() => {
     _buildLines(chars);
     const L = _layout;
     const capActive = capLvl > 0 && chars > 0 && L.type === 'single';
+    const rulingLvl = State.get().goldLevels['g_ruling'] || 0;
     let rem = chars;
     let lineIdx = 0;
 
@@ -184,7 +185,8 @@ const UI = (() => {
         const narrow     = capActive && lineIdx === 0 && i < 3;
         const x = narrow ? L.xCapEnd : sl.xStart;
         const y = sl.yFirst + i * sl.yStep;
-        g.appendChild(_makeTextEl(x, y, display, isComplete ? '0.76' : '0.38'));
+        const red = rulingLvl > 0 && ((lineIdx * 7 + 3) % 10 === 0);
+        g.appendChild(_makeTextEl(x, y, display, isComplete ? '0.76' : '0.38', red));
         rem -= line.length;
       }
       if (rem <= 0) break;
