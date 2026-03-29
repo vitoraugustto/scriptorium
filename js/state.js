@@ -70,7 +70,19 @@ const State = (() => {
 
   const getPageCapacity = () => _lettersPerPage;
 
+  const reset = () => {
+    _d.gold=5; _d.totalGold=0;
+    _d.salt=0; _d.totalSalt=0;
+    _d.letters=0; _d.totalLetters=0;
+    _d.currentPage=1; _d.codices=0;
+    _d.saltBonus=1.0; _d.startGold=5; _d.goldPerPage=0;
+    _d.autoPermMult=1.0; _d.clickPermMult=1.0;
+    _d.clickPower=1; _d.autoRate=0;
+    Config.GOLD_UPGRADES.forEach(u => { _d.goldLevels[u.id]=0; });
+    Config.SALT_UPGRADES.forEach(u => { _d.saltLevels[u.id]=0; });
+  };
+
   return { get, addLetters, spendGold, spendSalt, addGold, addSalt, setStats,
            levelUpGold, levelUpSalt, canBind, recomputeSalt, bindCodex,
-           setPageCapacity, getPageCapacity };
+           setPageCapacity, getPageCapacity, reset };
 })();

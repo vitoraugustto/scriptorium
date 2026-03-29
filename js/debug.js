@@ -11,21 +11,21 @@ const Debug = (() => {
     {
       title: 'Denarii',
       icon: 'coins',
-      placeholder: 'amount to add',
+      placeholder: 'amount',
       toast: (n) => `+${n} denarii added`,
       apply: (n) => State.addGold(n),
     },
     {
       title: 'Salt',
       icon: 'gem',
-      placeholder: 'amount to add',
+      placeholder: 'amount',
       toast: (n) => `+${n} g salt added`,
       apply: (n) => State.addSalt(n),
     },
     {
       title: 'Letters per keystroke',
       icon: 'pencil-line',
-      placeholder: 'set value',
+      placeholder: 'value',
       toast: (n) => `letters/keystroke set to ${n}`,
       apply: (n) => State.setStats({ click: n, auto: State.get().autoRate }),
     },
@@ -38,6 +38,14 @@ const Debug = (() => {
       { label: 'Single', fn: () => UI.setLayout('single') },
       { label: 'Double', fn: () => UI.setLayout('double') },
       { label: 'Quad',   fn: () => UI.setLayout('quad') },
+    ],
+  };
+
+  const _resetSection = {
+    title: 'Reset',
+    icon: 'rotate-ccw',
+    actions: [
+      { label: 'Reset all progress', fn: () => { State.reset(); Upgrades.recompute(); UI.clearFolio(); } },
     ],
   };
 
@@ -116,7 +124,8 @@ const Debug = (() => {
     _inputSections.forEach((s) => {
       panel.appendChild(_makeInputSection(s, true));
     });
-    panel.appendChild(_makeActionSection(_layoutSection, false));
+    panel.appendChild(_makeActionSection(_layoutSection, true));
+    panel.appendChild(_makeActionSection(_resetSection, false));
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
