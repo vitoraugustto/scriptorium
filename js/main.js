@@ -26,7 +26,7 @@ const Main = (() => {
     // only a–z, ignore modifier combos
     if (e.repeat) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (!/^[a-zA-Z]$/.test(e.key)) return;
+    if (!/^[a-zA-Z ]$/.test(e.key)) return;
 
     const gain = State.get().clickPower;
     const { pages, gold } = State.addLetters(gain);
