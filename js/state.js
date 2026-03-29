@@ -15,7 +15,7 @@ const State = (() => {
     clickPower:1, autoRate:0,
     goldLevels:{}, saltLevels:{},
   };
-  _d.gold = 5; // start with 5 denarii
+  _d.gold = 0;
 
   Config.GOLD_UPGRADES.forEach(u => { _d.goldLevels[u.id]=0; });
   Config.SALT_UPGRADES.forEach(u => { _d.saltLevels[u.id]=0; });
@@ -45,7 +45,7 @@ const State = (() => {
   const canBind = () => _d.currentPage > Config.PAGES_PER_CODEX;
 
   const recomputeSalt = () => {
-    let sb=1, sg=5, gpp=0, apm=1, cpm=1;
+    let sb=1, sg=0, gpp=0, apm=1, cpm=1;
     Config.SALT_UPGRADES.forEach(u => {
       const l=_d.saltLevels[u.id]; if(!l) return;
       if(u.effect==='saltBonus')     sb  += u.val*l;
@@ -71,11 +71,11 @@ const State = (() => {
   const getPageCapacity = () => _lettersPerPage;
 
   const reset = () => {
-    _d.gold=5; _d.totalGold=0;
+    _d.gold=0; _d.totalGold=0;
     _d.salt=0; _d.totalSalt=0;
     _d.letters=0; _d.totalLetters=0;
     _d.currentPage=1; _d.codices=0;
-    _d.saltBonus=1.0; _d.startGold=5; _d.goldPerPage=0;
+    _d.saltBonus=1.0; _d.startGold=0; _d.goldPerPage=0;
     _d.autoPermMult=1.0; _d.clickPermMult=1.0;
     _d.clickPower=1; _d.autoRate=0;
     Config.GOLD_UPGRADES.forEach(u => { _d.goldLevels[u.id]=0; });
