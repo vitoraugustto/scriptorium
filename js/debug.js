@@ -11,19 +11,22 @@ const Debug = (() => {
     {
       title: 'Denarii',
       icon: 'coins',
-      placeholder: '500',
+      placeholder: 'amount to add',
+      toast: (n) => `+${n} denarii added`,
       apply: (n) => State.addGold(n),
     },
     {
       title: 'Salt',
       icon: 'gem',
-      placeholder: '100',
+      placeholder: 'amount to add',
+      toast: (n) => `+${n} g salt added`,
       apply: (n) => State.addSalt(n),
     },
     {
       title: 'Letters per keystroke',
       icon: 'pencil-line',
-      placeholder: '10',
+      placeholder: 'set value',
+      toast: (n) => `letters/keystroke set to ${n}`,
       apply: (n) => State.setStats({ click: n, auto: State.get().autoRate }),
     },
   ];
@@ -38,7 +41,7 @@ const Debug = (() => {
     ],
   };
 
-  const _makeInputSection = ({ title, icon, placeholder, apply }, divided) => {
+  const _makeInputSection = ({ title, icon, placeholder, apply, toast }, divided) => {
     const section = document.createElement('div');
     section.className = 'debug-section' + (divided ? ' debug-section-divided' : '');
 
@@ -61,7 +64,12 @@ const Debug = (() => {
     btn.textContent = 'Apply';
     btn.addEventListener('click', () => {
       const n = parseInt(input.value, 10);
-      if (!isNaN(n) && n >= 0) { apply(n); _refresh(); }
+      if (!isNaN(n) && n >= 0) {
+        apply(n);
+        _refresh();
+        UI.showToast(toast(n));
+        input.value = '';
+      }
     });
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') btn.click();
