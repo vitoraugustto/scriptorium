@@ -1,6 +1,10 @@
 'use strict';
 
 const State = (() => {
+  let _lettersPerPage = 0; // set by UI.initRules() after font measurement
+
+  const setPageCapacity = (n) => { _lettersPerPage = n; };
+
   const _d = {
     gold:0, totalGold:0,
     salt:0, totalSalt:0,
@@ -21,8 +25,8 @@ const State = (() => {
   const addLetters = (n) => {
     _d.letters += n; _d.totalLetters += n;
     let pages=0, gold=0;
-    while (_d.letters >= Config.LETTERS_PER_PAGE) {
-      _d.letters -= Config.LETTERS_PER_PAGE;
+    while (_d.letters >= _lettersPerPage) {
+      _d.letters -= _lettersPerPage;
       pages++;
       const gain = Math.ceil((_d.currentPage + _d.goldPerPage) * _d.saltBonus);
       _d.gold += gain; _d.totalGold += gain; gold += gain;
@@ -64,6 +68,9 @@ const State = (() => {
     return saltGain;
   };
 
+  const getPageCapacity = () => _lettersPerPage;
+
   return { get, addLetters, spendGold, spendSalt, addGold, addSalt, setStats,
-           levelUpGold, levelUpSalt, canBind, recomputeSalt, bindCodex };
+           levelUpGold, levelUpSalt, canBind, recomputeSalt, bindCodex,
+           setPageCapacity, getPageCapacity };
 })();
