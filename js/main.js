@@ -38,7 +38,7 @@ const Main = (() => {
       UI.spawnFloat(
         window.innerWidth * 0.35,
         window.innerHeight * 0.5,
-        `+${UI.fmt(gold)} Đ`, 'dn'
+        `+${UI.fmt(gold)} <i data-lucide="coins" class="float-icon"></i>`, 'dn'
       );
       if (State.canBind()) UI.showToast('Codex complete — bind it in the sidebar!');
     }
@@ -55,7 +55,7 @@ const Main = (() => {
     UI.spawnFloat(
       window.innerWidth * 0.35,
       window.innerHeight * 0.4,
-      `+${UI.fmtSalt(saltGain)} ⬡`, 'salt'
+      `+${UI.fmtSalt(saltGain)} <i data-lucide="gem" class="float-icon"></i>`, 'salt'
     );
     UI.showToast(`Codex ${State.get().codices} bound — +${UI.fmtSalt(saltGain)} salt`);
   };

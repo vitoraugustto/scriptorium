@@ -6,55 +6,51 @@
 <title>Scriptorium</title>
 <link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
 <!-- ── TITLEBAR ── -->
 <div class="titlebar">
-  <div class="titlebar-dots">
-    <div class="dot r"></div>
-    <div class="dot y"></div>
-    <div class="dot g"></div>
-  </div>
   <span class="titlebar-title">Scriptorium</span>
   <div class="titlebar-right">
     <div class="title-resource">
-      <span class="tr-label">Đ</span>
+      <i data-lucide="coins" class="tr-icon dn"></i>
       <span class="tr-val dn" id="js-gold">5</span>
     </div>
     <div class="title-resource">
-      <span class="tr-label">⬡</span>
+      <i data-lucide="gem" class="tr-icon salt"></i>
       <span class="tr-val salt" id="js-salt">0 g</span>
     </div>
-    <button class="info-btn" id="js-info-btn">i</button>
-    <div class="info-panel" id="js-info-panel">
-      <div class="info-row">
-        <span class="info-lbl">Title</span>
-        <span class="info-val" id="js-scribe-title">Novice Scribe</span>
+    <button class="popup-btn info-btn" id="js-info-btn">i</button>
+    <div class="popup-panel info-panel" id="js-info-panel">
+      <div class="popup-row">
+        <span class="popup-lbl">Title</span>
+        <span class="popup-val" id="js-scribe-title">Novice Scribe</span>
       </div>
-      <div class="info-row">
-        <span class="info-lbl">Đ Denarii</span>
-        <span class="info-val dn" id="js-info-gold">5</span>
+      <div class="popup-row">
+        <span class="popup-lbl"><i data-lucide="coins" class="popup-lbl-icon dn"></i> Denarii</span>
+        <span class="popup-val dn" id="js-info-gold">5</span>
       </div>
-      <div class="info-row">
-        <span class="info-lbl">⬡ Salt</span>
-        <span class="info-val salt" id="js-info-salt">0 g</span>
+      <div class="popup-row">
+        <span class="popup-lbl"><i data-lucide="gem" class="popup-lbl-icon salt"></i> Salt</span>
+        <span class="popup-val salt" id="js-info-salt">0 g</span>
       </div>
-      <div class="info-row">
-        <span class="info-lbl">Codices</span>
-        <span class="info-val" id="js-codex-count">0</span>
+      <div class="popup-row">
+        <span class="popup-lbl">Codices</span>
+        <span class="popup-val" id="js-codex-count">0</span>
       </div>
-      <div class="info-row">
-        <span class="info-lbl">Letters/s</span>
-        <span class="info-val" id="js-auto-rate">0</span>
+      <div class="popup-row">
+        <span class="popup-lbl">Letters/s</span>
+        <span class="popup-val" id="js-auto-rate">0</span>
       </div>
-      <div class="info-row">
-        <span class="info-lbl">Per keystroke</span>
-        <span class="info-val" id="js-info-click">1</span>
+      <div class="popup-row">
+        <span class="popup-lbl">Per keystroke</span>
+        <span class="popup-val" id="js-info-click">1</span>
       </div>
-      <div class="info-row">
-        <span class="info-lbl">Salt bonus</span>
-        <span class="info-val salt" id="js-info-bonus">+0%</span>
+      <div class="popup-row">
+        <span class="popup-lbl">Salt bonus</span>
+        <span class="popup-val salt" id="js-info-bonus">+0%</span>
       </div>
     </div>
   </div>
@@ -147,8 +143,8 @@
   <div class="sidebar">
 
     <div class="sidebar-tabs">
-      <button class="stab active" id="stab-dn"   data-tab="dn">Đ Denarii</button>
-      <button class="stab salt"   id="stab-salt" data-tab="salt">⬡ Salt</button>
+      <button class="stab active" id="stab-dn"   data-tab="dn"><i data-lucide="coins"></i> Denarii</button>
+      <button class="stab salt"   id="stab-salt" data-tab="salt"><i data-lucide="gem"></i> Salt</button>
     </div>
 
     <div class="sidebar-panel active" id="panel-dn">
@@ -170,10 +166,13 @@
 <div class="key-flash" id="js-flash"></div>
 <div class="toast"     id="js-toast"></div>
 
+<script src="js/env.js"></script>
 <script src="js/config.js"></script>
 <script src="js/state.js"></script>
 <script src="js/upgrades.js"></script>
 <script src="js/ui.js"></script>
 <script src="js/main.js"></script>
+<script src="js/debug.js"></script>
+<script>Debug.init(); lucide.createIcons();</script>
 </body>
 </html>

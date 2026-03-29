@@ -33,6 +33,8 @@ const State = (() => {
 
   const spendGold = (n) => { _d.gold -= n; };
   const spendSalt = (n) => { _d.salt -= n; };
+  const addGold   = (n) => { _d.gold += n; _d.totalGold += n; };
+  const addSalt   = (n) => { _d.salt += n; _d.totalSalt += n; };
   const setStats  = (s) => { _d.clickPower=s.click; _d.autoRate=s.auto; };
   const levelUpGold = (id) => { _d.goldLevels[id]++; };
   const levelUpSalt = (id) => { _d.saltLevels[id]++; };
@@ -62,6 +64,6 @@ const State = (() => {
     return saltGain;
   };
 
-  return { get, addLetters, spendGold, spendSalt, setStats,
+  return { get, addLetters, spendGold, spendSalt, addGold, addSalt, setStats,
            levelUpGold, levelUpSalt, canBind, recomputeSalt, bindCodex };
 })();
