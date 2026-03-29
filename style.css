@@ -490,6 +490,21 @@ body {
   gap: 4px;
 }
 
+.debug-input {
+  width: 80px;
+  padding: 3px 6px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: none;
+  font-family: 'IM Fell English', serif;
+  font-size: 0.78rem;
+  color: var(--ink3);
+  outline: none;
+}
+.debug-input:focus { border-color: var(--ink4); }
+.debug-input::-webkit-inner-spin-button,
+.debug-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+
 .debug-action {
   padding: 3px 8px;
   border: 1px solid var(--rule);

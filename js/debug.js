@@ -7,46 +7,93 @@ const Debug = (() => {
     UI.refreshFolio();
   };
 
-  const _sections = [
+  const _inputSections = [
     {
       title: 'Denarii',
       icon: 'coins',
-      actions: [
-        { label: '+1,000',   fn: () => State.addGold(1000) },
-        { label: '+10,000',  fn: () => State.addGold(10000) },
-        { label: '+100,000', fn: () => State.addGold(100000) },
-      ],
+      placeholder: '500',
+      apply: (n) => State.addGold(n),
     },
     {
       title: 'Salt',
       icon: 'gem',
-      actions: [
-        { label: '+10 g',  fn: () => State.addSalt(10) },
-        { label: '+100 g', fn: () => State.addSalt(100) },
-        { label: '+1 kg',  fn: () => State.addSalt(1000) },
-      ],
+      placeholder: '100',
+      apply: (n) => State.addSalt(n),
     },
     {
       title: 'Letters per keystroke',
       icon: 'pencil-line',
-      actions: [
-        { label: '+1',  fn: () => State.setStats({ click: State.get().clickPower + 1,  auto: State.get().autoRate }) },
-        { label: '+5',  fn: () => State.setStats({ click: State.get().clickPower + 5,  auto: State.get().autoRate }) },
-        { label: '+10', fn: () => State.setStats({ click: State.get().clickPower + 10, auto: State.get().autoRate }) },
-        { label: '+25', fn: () => State.setStats({ click: State.get().clickPower + 25, auto: State.get().autoRate }) },
-        { label: '+50', fn: () => State.setStats({ click: State.get().clickPower + 50, auto: State.get().autoRate }) },
-      ],
-    },
-    {
-      title: 'Layout',
-      icon: 'layout',
-      actions: [
-        { label: 'Single', fn: () => UI.setLayout('single') },
-        { label: 'Double', fn: () => UI.setLayout('double') },
-        { label: 'Quad',   fn: () => UI.setLayout('quad') },
-      ],
+      placeholder: '10',
+      apply: (n) => State.setStats({ click: n, auto: State.get().autoRate }),
     },
   ];
+
+  const _layoutSection = {
+    title: 'Layout',
+    icon: 'layout',
+    actions: [
+      { label: 'Single', fn: () => UI.setLayout('single') },
+      { label: 'Double', fn: () => UI.setLayout('double') },
+      { label: 'Quad',   fn: () => UI.setLayout('quad') },
+    ],
+  };
+
+  const _makeInputSection = ({ title, icon, placeholder, apply }, divided) => {
+    const section = document.createElement('div');
+    section.className = 'debug-section' + (divided ? ' debug-section-divided' : '');
+
+    const hdr = document.createElement('div');
+    hdr.className = 'debug-section-title';
+    hdr.innerHTML = `<i data-lucide="${icon}"></i><span>${title}</span>`;
+    section.appendChild(hdr);
+
+    const row = document.createElement('div');
+    row.className = 'debug-action-row';
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.className = 'debug-input';
+    input.placeholder = placeholder;
+    input.min = '0';
+
+    const btn = document.createElement('button');
+    btn.className = 'debug-action';
+    btn.textContent = 'Apply';
+    btn.addEventListener('click', () => {
+      const n = parseInt(input.value, 10);
+      if (!isNaN(n) && n >= 0) { apply(n); _refresh(); }
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') btn.click();
+    });
+
+    row.appendChild(input);
+    row.appendChild(btn);
+    section.appendChild(row);
+    return section;
+  };
+
+  const _makeActionSection = ({ title, icon, actions }, divided) => {
+    const section = document.createElement('div');
+    section.className = 'debug-section' + (divided ? ' debug-section-divided' : '');
+
+    const hdr = document.createElement('div');
+    hdr.className = 'debug-section-title';
+    hdr.innerHTML = `<i data-lucide="${icon}"></i><span>${title}</span>`;
+    section.appendChild(hdr);
+
+    const row = document.createElement('div');
+    row.className = 'debug-action-row';
+    actions.forEach(({ label, fn }) => {
+      const b = document.createElement('button');
+      b.className = 'debug-action';
+      b.textContent = label;
+      b.addEventListener('click', () => { fn(); _refresh(); });
+      row.appendChild(b);
+    });
+    section.appendChild(row);
+    return section;
+  };
 
   const init = () => {
     if (!Env.DEBUG) return;
@@ -58,27 +105,10 @@ const Debug = (() => {
     const panel = document.createElement('div');
     panel.className = 'popup-panel debug-panel';
 
-    _sections.forEach(({ title, icon, actions }, i) => {
-      const section = document.createElement('div');
-      section.className = 'debug-section' + (i < _sections.length - 1 ? ' debug-section-divided' : '');
-
-      const hdr = document.createElement('div');
-      hdr.className = 'debug-section-title';
-      hdr.innerHTML = `<i data-lucide="${icon}"></i><span>${title}</span>`;
-      section.appendChild(hdr);
-
-      const row = document.createElement('div');
-      row.className = 'debug-action-row';
-      actions.forEach(({ label, fn }) => {
-        const b = document.createElement('button');
-        b.className = 'debug-action';
-        b.textContent = label;
-        b.addEventListener('click', () => { fn(); _refresh(); });
-        row.appendChild(b);
-      });
-      section.appendChild(row);
-      panel.appendChild(section);
+    _inputSections.forEach((s) => {
+      panel.appendChild(_makeInputSection(s, true));
     });
+    panel.appendChild(_makeActionSection(_layoutSection, false));
 
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
