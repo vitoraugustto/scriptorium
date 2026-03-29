@@ -12,7 +12,7 @@ Page complete    →  earns Denarii (resets each codex)
 Codex complete   →  earns Salt (permanent)
 ```
 
-- 1 page = 1,200 letters
+- 1 page = N letters (measured at runtime from font + layout — no hardcoded value)
 - 1 codex = 300 pages
 - **Denarii (Đ)** — main currency, resets on codex bind
 - **Salt (⬡)** — prestige currency, never resets. Displayed as g / kg / t
@@ -25,14 +25,15 @@ Codex complete   →  earns Salt (permanent)
 index.html
 style.css
 js/
-  config.js    — constants: LETTERS_PER_PAGE, UPGRADES, FOLIO geometry
+  config.js    — constants: UPGRADES, FOLIO geometry, layout definitions
+  env.js       — DEBUG flag (browser-compatible)
   state.js     — single source of truth, controlled mutations only
   upgrades.js  — cost calculation, buy logic, stat derivation
   ui.js        — all DOM access, folio rendering, floats, toasts
   main.js      — keyboard input, game loop, tab switching, init
 ```
 
-Module load order: `config → state → upgrades → ui → main`
+Module load order: `env → config → state → upgrades → ui → main → debug`
 
 ---
 
@@ -40,7 +41,9 @@ Module load order: `config → state → upgrades → ui → main`
 
 **Input:** only `a–z` keystrokes count. `e.repeat`, modifier keys, and mouse clicks are ignored.
 
-**Folio:** SVG 210×300 (7:10 proportion). 26 ruled lines. Text rendered line-by-line — completed lines at opacity 0.76, current line at 0.38. Line cache is append-only, never reordered.
+**Folio:** SVG 210×300 (7:10 proportion). No visible ruled lines — blank vellum. Text rendered line-by-line — completed lines at opacity 0.76, current line at 0.38. Line cache is append-only, never reordered.
+
+**Folio layouts:** Three layouts rotate randomly on each page turn: `single` (1 column), `double` (2 columns), `quad` (2×2 blocks). Defined via `makeLayout(id, colDefs, opts)` in config.js — adding new layouts is one line. Page capacity (letters per page) is measured at runtime by dry-running `_fitLine` across all slots; no hardcoded value.
 
 **Currencies:**
 - Denarii per page = `ceil(currentPage * saltBonus)`
