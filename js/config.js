@@ -21,16 +21,14 @@ const Config = (() => {
 
   // Folio geometry (SVG viewBox 210×300)
   const FOLIO = {
-    xStart:  26,   // after margin line, or 58 for lines beside capital
+    xStart:  26,
     xEnd:    194,
-    yFirst:  30,   // first baseline
-    yStep:   10,   // line spacing
+    xCapEnd: 58,
+    yFirst:  30,
+    yStep:   10,
     fontSize: 5.8,
-    charW:   3.3,
     totalLines: 26,
-    get lineW()        { return this.xEnd - this.xStart; },
-    get charsPerLine() { return Math.floor(this.lineW / this.charW); },
-    get charsPerLineNarrow() { return Math.floor((this.xEnd - 58) / this.charW); },
+    get lineW() { return this.xEnd - this.xStart; },
   };
 
   const GOLD_UPGRADES = [

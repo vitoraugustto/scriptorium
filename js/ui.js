@@ -19,7 +19,7 @@ const UI = (() => {
 
   // ── Folio text — line-by-line ────────────────────────────────
   const F = Config.FOLIO;
-  let _words=[], _lines=[], _lastChars=-1;
+  let _words=[], _lines=[], _lastChars=-1, _buf='';
 
   const _refill = () => {
     const w=Config.LOREM;
@@ -27,23 +27,49 @@ const UI = (() => {
   };
   _refill();
 
+  const _nextWord = () => {
+    if (_words.length < 10) _refill();
+    return _words.shift();
+  };
+
+  const _measureText = (str) => {
+    const svg = document.getElementById('js-folio');
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('font-family','IM Fell English, serif');
+    t.setAttribute('font-size', F.fontSize);
+    t.setAttribute('font-style','italic');
+    t.setAttribute('visibility','hidden');
+    t.textContent = str;
+    svg.appendChild(t);
+    const w = t.getComputedTextLength();
+    svg.removeChild(t);
+    return w;
+  };
+
   const _buildLines = (target) => {
     let cached = _lines.reduce((s,l)=>s+l.length, 0);
     if (cached >= target) return;
-    let wi = (_lines.length * 7) % Math.max(_words.length,1);
     while (cached < target && _lines.length < F.totalLines) {
-      if (_words.length<120) _refill();
-      const narrow = _lines.length < 3; // beside capital
-      const max    = narrow ? F.charsPerLineNarrow : F.charsPerLine;
-      let line='', lc=0;
-      while (lc<max) {
-        if(wi>=_words.length){_refill();wi=0;}
-        const w=_words[wi];
-        const need=lc===0?w.length:w.length+1;
-        if(lc+need>max){wi++;break;}
-        if(lc>0){line+=' ';lc++;}
-        line+=w; lc+=w.length; wi++;
+      const capActive = (State.get().saltLevels['s_capital'] || 0) > 0;
+      const narrow  = capActive && _lines.length < 3;
+      const maxW    = narrow ? (F.xEnd - F.xCapEnd) : F.lineW;
+      while (_buf.length < 200) _buf += ' ' + _nextWord();
+      _buf = _buf.trimStart();
+      let lo = 1, hi = _buf.length, fit = 1;
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (_measureText(_buf.slice(0, mid)) <= maxW) { fit = mid; lo = mid + 1; }
+        else hi = mid - 1;
       }
+      let line, rest;
+      if (_buf[fit] === ' ' || _buf[fit - 1] === ' ') {
+        line = _buf.slice(0, fit).trimEnd();
+        rest = _buf.slice(fit).trimStart();
+      } else {
+        line = _buf.slice(0, fit - 1) + '-';
+        rest = _buf.slice(fit - 1);
+      }
+      _buf = rest;
       _lines.push(line);
       cached += line.length;
     }
@@ -104,7 +130,7 @@ const UI = (() => {
   };
 
   const clearFolio = () => {
-    _lastChars=-1; _lines=[]; _words=[]; _refill(); refreshFolio();
+    _lastChars=-1; _lines=[]; _words=[]; _buf=''; _refill(); refreshFolio();
   };
 
   // ── Stats ─────────────────────────────────────────────────────
@@ -176,12 +202,13 @@ const UI = (() => {
       for(let i=0;i<u.max;i++) pips+=`<div class="pip${i<lvl?' on salt':''}"></div>`;
       row.innerHTML=`
         <div class="u-name">${u.name}</div>
-        <div class="u-cost ${isMax?'is-maxed':can?'can-s':''}">${isMax?'done':fmtSalt(cost)+' ⬡'}</div>
+        <div class="u-cost ${isMax?'is-maxed':can?'can-s':''}">${isMax?'done':fmtSalt(cost)+' <i data-lucide="gem" class="u-cost-icon"></i>'}</div>
         <div class="u-desc">${u.desc}</div>
         <div class="u-pips">${pips}</div>`;
       if(!isMax) row.addEventListener('click',()=>onSalt(u));
       sList.appendChild(row);
     });
+    lucide.createIcons();
   };
 
   const flashKey = () => {
@@ -191,12 +218,13 @@ const UI = (() => {
     el.classList.add('show');
   };
 
-  const spawnFloat = (x, y, text, cls='dn') => {
+  const spawnFloat = (x, y, html, cls='dn') => {
     const el=document.createElement('div');
     el.className=`float-num ${cls}`;
-    el.textContent=text;
+    el.innerHTML=html;
     el.style.cssText=`left:${x-14+Math.random()*28}px;top:${y-8}px`;
     document.body.appendChild(el);
+    lucide.createIcons({ nodes: [el] });
     setTimeout(()=>el.remove(),880);
   };
 
