@@ -39,22 +39,22 @@ Module load order: `env → config → state → upgrades → ui → main → de
 
 ## Key design decisions
 
-**Input:** only `a–z` keystrokes count. `e.repeat`, modifier keys, and mouse clicks are ignored.
+**Input:** `a–z` and spacebar count. `e.repeat`, modifier keys, and mouse clicks are ignored.
 
 **Folio:** SVG 210×300 (7:10 proportion). No visible ruled lines — blank vellum. Text rendered line-by-line — completed lines at opacity 0.76, current line at 0.38. Line cache is append-only, never reordered.
 
 **Folio layouts:** Three layouts rotate randomly on each page turn: `single` (1 column), `double` (2 columns), `quad` (2×2 blocks). Defined via `makeLayout(id, colDefs, opts)` in config.js — adding new layouts is one line. Page capacity (letters per page) is measured at runtime by dry-running `_fitLine` across all slots; no hardcoded value.
 
 **Currencies:**
-- Denarii per page = `ceil(currentPage * saltBonus)`
-- Salt per codex = codex number (1st = 1g, 2nd = 2g, …)
-- Player starts with 5 Đ
+- Denarii per page = `ceil((1 + pageBonus + goldPerPage) * saltBonus)`
+- Salt per codex = codex number (1st = 1g, 2nd = 2g, ...)
+- Player starts with 0 Đ
 
 **Upgrades — two trees:**
 
-Denarii (reset each codex): `clickMult` (Goose Quill, Iron Gall Ink, Refined Calligraphy, Treated Vellum, Illumination) and `autoAdd` (Apprentice 1/s → Copyist 5/s → Benedictine Monk 25/s → Scriptorium Hall 100/s → Royal Library 500/s → Order of Scribes 2000/s)
+Denarii (reset each codex): built one at a time. Current: Goose Quill (`clickAdd` +1/level, max 10, base 5 Đ), Parchment Ruling (`pageAdd` +1 Đ/page per level, max 5, base 10 Đ, also renders 10% of folio lines in red ink)
 
-Salt (permanent): Salt Cellar (+0.3 saltBonus/level), Scribe's Provisions (starting Đ), Prepared Vellum (+Đ/page), Eternal Scriptorium (2× auto), Golden Quill (2× click), Illuminated Capital, Golden Capital
+Salt (permanent): Salt Cellar (+0.3 saltBonus/level), Scribe's Provisions (starting Đ), Prepared Vellum (+Đ/page via `goldPerPage`), Eternal Scriptorium (2x auto), Golden Quill (2x click), Illuminated Capital, Golden Capital
 
 **Game loop:** `setInterval` every 50ms. Auto adds `autoRate / 20` letters per tick.
 
@@ -84,9 +84,9 @@ Salt (permanent): Salt Cellar (+0.3 saltBonus/level), Scribe's Provisions (start
 
 ## Git workflow
 
-- Branch: `feature/<name>` per feature
-- When a feature is done: Claude asks before committing
-- Flow: commit on feature branch → push → merge into `main` → delete branch
+- Commit autonomously when closing a feature, no need to ask
+- Group commits by logical unit, not by file
+- No co-author lines in commit messages
 
 ---
 
