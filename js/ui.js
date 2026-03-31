@@ -126,16 +126,38 @@ const UI = (() => {
 
   const _FONT_SIZE = 6.2; // fixed — never changes with layout
 
-  const _makeTextEl = (x, y, display, opacity, red=false) => {
+  const _makeTextEl = (x, y, display, opacity, redWords=0, lineIdx=0) => {
     const t = svgEl('text');
     t.setAttribute('x', x);
     t.setAttribute('y', y);
     t.setAttribute('font-family','IM Fell English, serif');
     t.setAttribute('font-size', _FONT_SIZE);
     t.setAttribute('font-style','italic');
-    t.setAttribute('fill', red ? '#8b3a1a' : '#1e1608');
+    t.setAttribute('fill','#1e1608');
     t.setAttribute('opacity', opacity);
-    t.textContent = display;
+
+    if (redWords <= 0) {
+      t.textContent = display;
+      return t;
+    }
+
+    // split into word tokens preserving spaces, color deterministically by level
+    // rulingLvl 1..10 => 1%..10% of words red
+    const tokens = display.split(/(\s+)/);
+    let wordIdx = 0;
+    let first = true;
+    for (const tok of tokens) {
+      const span = svgEl('tspan');
+      const isWord = /\S/.test(tok);
+      if (isWord) {
+        const hash = (lineIdx * 31 + wordIdx * 7 + 3) % 100;
+        span.setAttribute('fill', hash < redWords ? '#8b3a1a' : 'inherit');
+        wordIdx++;
+      }
+      if (first) { span.setAttribute('x', x); first = false; }
+      span.textContent = tok;
+      t.appendChild(span);
+    }
     return t;
   };
 
@@ -185,8 +207,7 @@ const UI = (() => {
         const narrow     = capActive && lineIdx === 0 && i < 3;
         const x = narrow ? L.xCapEnd : sl.xStart;
         const y = sl.yFirst + i * sl.yStep;
-        const red = rulingLvl > 0 && ((lineIdx * 7 + 3) % 10 === 0);
-        g.appendChild(_makeTextEl(x, y, display, isComplete ? '0.76' : '0.38', red));
+        g.appendChild(_makeTextEl(x, y, display, isComplete ? '0.76' : '0.38', rulingLvl, lineIdx));
         rem -= line.length;
       }
       if (rem <= 0) break;

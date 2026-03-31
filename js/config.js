@@ -169,7 +169,7 @@ const Config = (() => {
       desc: 'Lines ruled into the vellum guide a denser hand — each page yields more',
       baseCost: 10,
       costMult: 2.0,
-      max: 5,
+      max: 10,
       effect: 'pageAdd',
       val: 1,
     },
