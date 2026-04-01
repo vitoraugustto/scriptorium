@@ -12,7 +12,7 @@
   --salt:    #5a8090;
   --rule:    rgba(61,48,24,0.15);
   --rule2:   rgba(61,48,24,0.07);
-  --sidebar: 340px;
+  --sidebar: 380px;
 }
 
 /* ── RESET ──────────────────────────────────────────────────── */
@@ -104,11 +104,11 @@ body {
 .popup-btn.open { border-color: var(--rust); color: var(--rust); }
 
 .popup-panel {
-  width: 250px;
+  width: 300px;
   background: var(--vellum2);
   border: 1px solid var(--rule);
   border-radius: 3px;
-  padding: 12px 18px;
+  padding: 14px 20px;
   z-index: 200;
   box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   opacity: 0;
@@ -184,8 +184,8 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  padding: 16px 24px;
+  gap: 10px;
+  padding: 10px 20px;
   overflow: hidden;
 }
 
@@ -234,8 +234,8 @@ body {
 /* folio wrapper */
 .folio-wrap {
   position: relative;
-  height: calc(100vh - 36px - 56px - 28px);
-  max-height: 820px;
+  height: calc(100vh - 46px - 48px - 20px);
+  max-height: 960px;
   aspect-ratio: 7 / 10;
 }
 
@@ -439,63 +439,63 @@ body {
   position: fixed;
   bottom: 20px;
   left: 20px;
-  width: 34px; height: 34px;
+  width: 44px; height: 44px;
   border-color: var(--rust);
   color: var(--rust);
   opacity: 0.5;
   transition: opacity 0.15s;
 }
-.debug-btn svg { width: 14px; height: 14px; stroke-width: 1.5; }
+.debug-btn svg { width: 20px; height: 20px; stroke-width: 1.5; }
 .debug-btn:hover { opacity: 1; }
 .debug-btn.open  { opacity: 1; }
 
 .debug-panel {
   position: fixed;
-  bottom: 62px;
+  bottom: 72px;
   left: 20px;
 }
 .debug-panel::before {
   content: '';
   position: absolute;
-  bottom: -5px; left: 10px;
-  width: 8px; height: 8px;
+  bottom: -5px; left: 14px;
+  width: 10px; height: 10px;
   background: var(--vellum2);
   border-right: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
   transform: rotate(45deg);
 }
 
-.debug-section { padding: 6px 0; }
-.debug-section.debug-section-divided { border-bottom: 1px solid var(--rule2); padding-bottom: 8px; margin-bottom: 2px; }
+.debug-section { padding: 10px 0; }
+.debug-section.debug-section-divided { border-bottom: 1px solid var(--rule2); padding-bottom: 12px; margin-bottom: 4px; }
 
 .debug-section-title {
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 0.72rem;
+  gap: 7px;
+  font-size: 0.85rem;
   letter-spacing: 2px;
   text-transform: uppercase;
   color: var(--ink4);
   font-weight: 300;
   font-style: italic;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
-.debug-section-title svg { width: 10px; height: 10px; stroke-width: 1.5; }
+.debug-section-title svg { width: 14px; height: 14px; stroke-width: 1.5; }
 
 .debug-action-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 6px;
 }
 
 .debug-input {
-  width: 80px;
-  padding: 3px 6px;
+  width: 110px;
+  padding: 5px 10px;
   border: 1px solid var(--rule);
   border-radius: 2px;
   background: none;
   font-family: 'IM Fell English', serif;
-  font-size: 0.78rem;
+  font-size: 1rem;
   color: var(--ink3);
   outline: none;
 }
@@ -504,13 +504,13 @@ body {
 .debug-input::-webkit-outer-spin-button { -webkit-appearance: none; }
 
 .debug-action {
-  padding: 3px 8px;
+  padding: 5px 14px;
   border: 1px solid var(--rule);
   border-radius: 2px;
   background: none;
   cursor: pointer;
   font-family: 'IM Fell English', serif;
-  font-size: 0.78rem;
+  font-size: 1rem;
   color: var(--ink3);
   transition: border-color 0.1s, color 0.1s;
 }
