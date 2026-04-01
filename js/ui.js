@@ -339,5 +339,19 @@ const _measureCapacity = () => {
 
 const initRules = () => { _renderRules(); _measureCapacity(); };
 
+const countRedWords = () => {
+  const rulingLvl = State.get().goldLevels['g_ruling'] || 0;
+  if (!rulingLvl) return 0;
+  let count = 0;
+  _lines.forEach((line, lineIdx) => {
+    const words = line.split(/\s+/).filter(w => w.length > 0);
+    words.forEach((_, wordIdx) => {
+      const hash = (lineIdx * 31 + wordIdx * 7 + 3) % 100;
+      if (hash < rulingLvl) count++;
+    });
+  });
+  return count;
+};
+
 export default { refreshStats, refreshUpgrades, refreshFolio, clearFolio,
-                 flashKey, spawnFloat, showToast, fmt, fmtSalt, setLayout, initRules };
+                 flashKey, spawnFloat, showToast, fmt, fmtSalt, setLayout, initRules, countRedWords };

@@ -31,7 +31,8 @@ const handleKey = (e) => {
   if (e.key === ' ') e.preventDefault();
 
   const gain = State.get().clickPower;
-  const { pages, gold } = State.addLetters(gain);
+  const redBonus = UI.countRedWords();
+  const { pages, gold } = State.addLetters(gain, redBonus);
 
   UI.flashKey();
 
@@ -68,7 +69,8 @@ const startLoop = () => {
   setInterval(() => {
     const { autoRate } = State.get();
     if (autoRate <= 0) return;
-    const { pages } = State.addLetters(autoRate / (1000/Config.AUTO_TICK_MS));
+    const autoRedBonus = UI.countRedWords();
+    const { pages } = State.addLetters(autoRate / (1000/Config.AUTO_TICK_MS), autoRedBonus);
     if (pages > 0) {
       const layouts = Object.keys(Config.FOLIO_LAYOUTS);
       UI.setLayout(layouts[Math.floor(Math.random() * layouts.length)]);

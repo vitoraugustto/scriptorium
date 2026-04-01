@@ -106,7 +106,7 @@ const GOLD_UPGRADES = [
   {
     id: 'g_ruling',
     name: 'Parchment Ruling',
-    desc: 'Lines ruled into the vellum guide a denser hand, each page yields more',
+    desc: 'Lines ruled into the vellum leave traces of red ink. Each red word earns 1 extra denarius when the page turns.',
     baseCost: 10,
     costMult: 2.0,
     max: 10,
