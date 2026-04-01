@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "serve .",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --passWithNoTests"
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --passWithNoTests --coverage"
   },
   "devDependencies": {
     "jest": "^29.0.0",
