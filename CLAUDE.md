@@ -46,13 +46,13 @@ Module load order: `env → config → state → upgrades → ui → main → de
 **Folio layouts:** Three layouts rotate randomly on each page turn: `single` (1 column), `double` (2 columns), `quad` (2×2 blocks). Defined via `makeLayout(id, colDefs, opts)` in config.js — adding new layouts is one line. Page capacity (letters per page) is measured at runtime by dry-running `_fitLine` across all slots; no hardcoded value.
 
 **Currencies:**
-- Denarii per page = `ceil((1 + pageBonus + goldPerPage) * saltBonus)`
+- Denarii per page = `ceil((1 + goldPerPage) * saltBonus) + redWordCount`
 - Salt per codex = codex number (1st = 1g, 2nd = 2g, ...)
 - Player starts with 0 Đ
 
 **Upgrades — two trees:**
 
-Denarii (reset each codex): built one at a time. Current: Goose Quill (`clickAdd` +1/level, max 10, base 5 Đ), Parchment Ruling (`pageAdd` +1 Đ/page per level, max 5, base 10 Đ, also renders 10% of folio lines in red ink)
+Denarii (reset each codex): built one at a time. Current: Goose Quill (`clickAdd` +1/level, max 10, base 5 Đ), Parchment Ruling (max 10, base 10 Đ): renders 1% of words in red per level; each red word on the page earns +1 Đ when the page turns
 
 Salt (permanent): Salt Cellar (+0.3 saltBonus/level), Scribe's Provisions (starting Đ), Prepared Vellum (+Đ/page via `goldPerPage`), Eternal Scriptorium (2x auto), Golden Quill (2x click), Illuminated Capital, Golden Capital
 
