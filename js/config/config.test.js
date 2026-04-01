@@ -1,4 +1,4 @@
-import Config from '../config/index.js';
+import Config from './index.js';
 
 describe('Config', () => {
   test('is frozen', () => {
