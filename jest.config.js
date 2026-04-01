@@ -1,7 +1,10 @@
 export default {
   testEnvironment: 'node',
   collectCoverageFrom: [
-    'js/config.js',
+    'js/config/constants.js',
+    'js/config/layouts.js',
+    'js/config/upgrades.js',
+    'js/config/index.js',
     'js/state.js',
     'js/upgrades.js',
     'js/env.js',

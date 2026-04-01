@@ -1,4 +1,4 @@
-import Config from './config.js';
+import Config from './config/index.js';
 import State from './state.js';
 
 const goldCost = (u) =>

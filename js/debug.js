@@ -1,8 +1,7 @@
 import Env from './env.js';
-import Config from './config.js';
 import State from './state.js';
 import Upgrades from './upgrades.js';
-import UI from './ui.js';
+import UI from './ui/index.js';
 import Main from './main.js';
 
 const _refresh = () => Main.refresh();

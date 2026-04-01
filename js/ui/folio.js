@@ -1,23 +1,8 @@
-import Config from './config.js';
-import State from './state.js';
-import Upgrades from './upgrades.js';
+import Config from '../config/index.js';
+import State from '../state.js';
 
-const fmt = (n) => {
-  n = Math.floor(n);
-  if(n>=1e12) return (n/1e12).toFixed(2)+'T';
-  if(n>=1e9)  return (n/1e9).toFixed(2)+'B';
-  if(n>=1e6)  return (n/1e6).toFixed(2)+'M';
-  if(n>=1e3)  return (n/1e3).toFixed(1)+'K';
-  return n.toLocaleString();
-};
-const fmtSalt = (n) => {
-  n = Math.floor(n);
-  if(n>=1e6) return (n/1e6).toFixed(2)+' t';
-  if(n>=1e3) return (n/1e3).toFixed(2)+' kg';
-  return n+' g';
-};
-const $ = (id) => document.getElementById(id);
 const svgEl = (tag) => document.createElementNS('http://www.w3.org/2000/svg', tag);
+const $ = (id) => document.getElementById(id);
 
 // ── Active layout ────────────────────────────────────────────
 let _layout = Config.FOLIO_LAYOUTS.single;
@@ -217,107 +202,6 @@ const clearFolio = () => {
   refreshFolio();
 };
 
-// ── Stats ─────────────────────────────────────────────────────
-const refreshStats = () => {
-  const s = State.get();
-
-  $('js-gold').textContent = fmt(s.gold);
-  $('js-salt').textContent = fmtSalt(s.salt);
-
-  const title = Config.SCRIBE_TITLES[Math.min(s.codices, Config.SCRIBE_TITLES.length-1)];
-  $('js-scribe-title').textContent = title;
-  $('js-info-gold').textContent    = fmt(s.gold);
-  $('js-info-salt').textContent    = fmtSalt(s.salt);
-  $('js-codex-count').textContent  = s.codices;
-  $('js-auto-rate').textContent    = fmt(s.autoRate);
-  $('js-info-click').textContent   = fmt(s.clickPower);
-  $('js-info-bonus').textContent   = `+${Math.round((s.saltBonus-1)*100)}%`;
-
-  const lpp = State.getPageCapacity();
-  const pagePct  = (s.letters / lpp * 100).toFixed(1);
-  const codexPct = Math.min((s.currentPage-1) / Config.PAGES_PER_CODEX * 100, 100);
-  $('js-prog-page').style.width  = pagePct + '%';
-  $('js-prog-codex').style.width = codexPct + '%';
-  $('js-prog-page-stat').textContent  =
-    `${fmt(s.letters)} / ${fmt(lpp)}`;
-  $('js-prog-codex-stat').textContent =
-    `p. ${Math.min(s.currentPage, Config.PAGES_PER_CODEX).toLocaleString()} / ${Config.PAGES_PER_CODEX.toLocaleString()}`;
-
-  const can = State.canBind();
-  $('js-codex-btn').disabled = !can;
-  const left = Math.max(0, Config.PAGES_PER_CODEX - s.currentPage + 1);
-  $('js-codex-note').textContent = can
-    ? `ready to bind — gain ${fmtSalt(s.codices+1)}`
-    : `${left.toLocaleString()} page${left!==1?'s':''} remaining`;
-};
-
-const refreshUpgrades = (onGold, onSalt) => {
-  const { gold, goldLevels, salt, saltLevels } = State.get();
-
-  const gList = $('list-dn');
-  gList.innerHTML = '';
-  Config.GOLD_UPGRADES.forEach(u => {
-    const lvl=goldLevels[u.id], cost=Upgrades.goldCost(u);
-    const isMax=lvl>=u.max, can=!isMax&&gold>=cost;
-    const row=document.createElement('div');
-    row.className='upgrade-row'+(isMax?' u-maxed':!can?' u-locked':'');
-    let pips='';
-    for(let i=0;i<u.max;i++) pips+=`<div class="pip${i<lvl?' on':''}"></div>`;
-    row.innerHTML=`
-      <div class="u-name">${u.name}</div>
-      <div class="u-cost ${isMax?'is-maxed':can?'can-d':''}">${isMax?'done':fmt(cost)+' Đ'}</div>
-      <div class="u-desc">${u.desc}</div>
-      <div class="u-pips">${pips}</div>`;
-    if(!isMax) row.addEventListener('click',()=>onGold(u));
-    gList.appendChild(row);
-  });
-
-  const sList = $('list-salt');
-  sList.innerHTML = '';
-  Config.SALT_UPGRADES.forEach(u => {
-    const lvl=saltLevels[u.id], cost=Upgrades.saltCost(u);
-    const isMax=lvl>=u.max, can=!isMax&&salt>=cost;
-    const row=document.createElement('div');
-    row.className='upgrade-row'+(isMax?' u-maxed':!can?' u-locked':'');
-    let pips='';
-    for(let i=0;i<u.max;i++) pips+=`<div class="pip${i<lvl?' on salt':''}"></div>`;
-    row.innerHTML=`
-      <div class="u-name">${u.name}</div>
-      <div class="u-cost ${isMax?'is-maxed':can?'can-s':''}">${isMax?'done':fmtSalt(cost)+' <i data-lucide="gem" class="u-cost-icon"></i>'}</div>
-      <div class="u-desc">${u.desc}</div>
-      <div class="u-pips">${pips}</div>`;
-    if(!isMax) row.addEventListener('click',()=>onSalt(u));
-    sList.appendChild(row);
-  });
-  lucide.createIcons();
-};
-
-const flashKey = () => {
-  const el=$('js-flash');
-  el.classList.remove('show');
-  void el.offsetWidth;
-  el.classList.add('show');
-};
-
-const spawnFloat = (x, y, html, cls='dn') => {
-  const el=document.createElement('div');
-  el.className=`float-num ${cls}`;
-  el.innerHTML=html;
-  el.style.cssText=`left:${x-14+Math.random()*28}px;top:${y-8}px`;
-  document.body.appendChild(el);
-  lucide.createIcons({ nodes: [el] });
-  setTimeout(()=>el.remove(),880);
-};
-
-let _tt;
-const showToast = (msg) => {
-  const el=$('js-toast');
-  el.textContent=msg;
-  el.classList.add('show');
-  clearTimeout(_tt);
-  _tt=setTimeout(()=>el.classList.remove('show'),2400);
-};
-
 const _measureCapacity = () => {
   const savedBuf = _buf;
   _buf = '';
@@ -353,5 +237,4 @@ const countRedWords = () => {
   return count;
 };
 
-export default { refreshStats, refreshUpgrades, refreshFolio, clearFolio,
-                 flashKey, spawnFloat, showToast, fmt, fmtSalt, setLayout, initRules, countRedWords };
+export { setLayout, refreshFolio, clearFolio, initRules, countRedWords };

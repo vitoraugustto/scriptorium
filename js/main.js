@@ -1,7 +1,7 @@
-import Config from './config.js';
+import Config from './config/index.js';
 import State from './state.js';
 import Upgrades from './upgrades.js';
-import UI from './ui.js';
+import UI from './ui/index.js';
 
 let _activeTab = 'dn';
 

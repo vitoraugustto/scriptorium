@@ -1,4 +1,4 @@
-import Config from './config.js';
+import Config from './config/index.js';
 
 let _lettersPerPage = 0;
 
