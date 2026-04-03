@@ -1,3 +1,4 @@
+import { createIcons, Coins, Gem } from 'lucide';
 import Config from '../config/index';
 import State from '../state';
 import I18n from '../i18n/index';
@@ -70,7 +71,7 @@ const spawnFloat = (x, y, html, cls='dn') => {
   el.innerHTML=html;
   el.style.cssText=`left:${x-14+Math.random()*28}px;top:${y-8}px`;
   document.body.appendChild(el);
-  lucide.createIcons({ nodes: [el] });
+  createIcons({ nodes: [el], icons: { Coins, Gem } });
   setTimeout(()=>el.remove(),880);
 };
 

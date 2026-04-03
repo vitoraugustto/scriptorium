@@ -1,3 +1,4 @@
+import { createIcons, Gem } from 'lucide';
 import Config from '../config/index';
 import State from '../state';
 import UpgradesLogic from '../upgrades';
@@ -48,7 +49,7 @@ const refreshUpgrades = (onGold, onSalt) => {
     if(!isMax) row.addEventListener('click',()=>onSalt(u));
     sList.appendChild(row);
   });
-  lucide.createIcons();
+  createIcons({ icons: { Gem } });
 };
 
 export { refreshUpgrades };

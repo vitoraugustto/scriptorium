@@ -1,6 +1,9 @@
+import { createIcons, Coins, Gem, Bug, Layout, RotateCcw, PencilLine } from 'lucide';
 import Main from './main';
 import Debug from './debug';
 
-Debug.init();
+const icons = { Coins, Gem, Bug, Layout, RotateCcw, PencilLine };
+
+Debug.init(createIcons, icons);
 Main.init(() => Debug.refreshLabels());
-lucide.createIcons();
+createIcons({ icons });

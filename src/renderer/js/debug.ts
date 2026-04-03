@@ -5,6 +5,9 @@ import UI from './ui/index';
 import Main from './main';
 import I18n from './i18n/index';
 
+let _createIcons: (opts?: object) => void = () => {};
+let _icons: object = {};
+
 const _refresh = () => Main.refresh();
 
 const _inputSections = [
@@ -131,7 +134,10 @@ const refreshLabels = () => {
   if (wasOpen) _panel.classList.add('open');
 };
 
-const init = () => {
+const init = (createIcons: (opts?: object) => void = () => {}, icons: object = {}) => {
+  _createIcons = createIcons;
+  _icons = icons;
+
   if (!Env.DEBUG) return;
 
   const btn = document.createElement('button');
@@ -151,7 +157,7 @@ const init = () => {
   });
 
   document.body.appendChild(btn);
-  lucide.createIcons();
+  _createIcons({ icons: _icons });
 };
 
 export default { init, refreshLabels };
