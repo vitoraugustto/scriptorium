@@ -9,12 +9,10 @@ const _d = {
   salt:0, totalSalt:0,
   letters:0, totalLetters:0,
   currentPage:1, codices:0,
-  saltBonus:1.0, startGold:5, goldPerPage:0,
-  autoPermMult:1.0, clickPermMult:1.0,
+  saltBonus:1.0,
   clickPower:1, autoRate:0,
   goldLevels:{}, saltLevels:{},
 };
-_d.gold = 0;
 
 Config.GOLD_UPGRADES.forEach(u => { _d.goldLevels[u.id]=0; });
 Config.SALT_UPGRADES.forEach(u => { _d.saltLevels[u.id]=0; });
@@ -27,7 +25,7 @@ const addLetters = (n, redWordBonus=0) => {
   while (_d.letters >= _lettersPerPage) {
     _d.letters -= _lettersPerPage;
     pages++;
-    const gain = Math.ceil((1 + _d.goldPerPage) * _d.saltBonus);
+    const gain = Math.ceil(_d.saltBonus);
     const bonus = pages === 1 ? redWordBonus : 0;
     _d.gold += gain + bonus; _d.totalGold += gain + bonus; gold += gain + bonus;
     _d.currentPage++;
@@ -45,24 +43,19 @@ const levelUpSalt = (id) => { _d.saltLevels[id]++; };
 const canBind = () => _d.currentPage > Config.PAGES_PER_CODEX;
 
 const recomputeSalt = () => {
-  let sb=1, sg=0, gpp=0, apm=1, cpm=1;
+  let sb=1;
   Config.SALT_UPGRADES.forEach(u => {
     const l=_d.saltLevels[u.id]; if(!l) return;
-    if(u.effect==='saltBonus')     sb  += u.val*l;
-    if(u.effect==='startGold')     sg  += u.val*l;
-    if(u.effect==='goldPerPage')   gpp += u.val*l;
-    if(u.effect==='autoMult')      apm *= Math.pow(u.val,l);
-    if(u.effect==='clickPermMult') cpm *= Math.pow(u.val,l);
+    if(u.effect==='saltBonus') sb += u.val*l;
   });
-  _d.saltBonus=sb; _d.startGold=sg; _d.goldPerPage=gpp;
-  _d.autoPermMult=apm; _d.clickPermMult=cpm;
+  _d.saltBonus=sb;
 };
 
 const bindCodex = () => {
   _d.codices++;
   const saltGain = _d.codices;
   _d.salt += saltGain; _d.totalSalt += saltGain;
-  _d.gold = _d.startGold;
+  _d.gold = 0;
   _d.letters = 0; _d.currentPage = 1;
   Config.GOLD_UPGRADES.forEach(u => { _d.goldLevels[u.id]=0; });
   return saltGain;
@@ -75,8 +68,7 @@ const reset = () => {
   _d.salt=0; _d.totalSalt=0;
   _d.letters=0; _d.totalLetters=0;
   _d.currentPage=1; _d.codices=0;
-  _d.saltBonus=1.0; _d.startGold=0; _d.goldPerPage=0;
-  _d.autoPermMult=1.0; _d.clickPermMult=1.0;
+  _d.saltBonus=1.0;
   _d.clickPower=1; _d.autoRate=0;
   Config.GOLD_UPGRADES.forEach(u => { _d.goldLevels[u.id]=0; });
   Config.SALT_UPGRADES.forEach(u => { _d.saltLevels[u.id]=0; });

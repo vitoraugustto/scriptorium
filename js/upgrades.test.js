@@ -32,14 +32,14 @@ describe('Upgrades.goldCost', () => {
 
 describe('Upgrades.saltCost', () => {
   test('level 0 returns baseCost', () => {
-    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_bonus1');
+    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_benefice');
     expect(Upgrades.saltCost(cellar)).toBe(cellar.baseCost);
   });
 
   test('cost increases with level', () => {
-    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_bonus1');
+    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_benefice');
     const cost0 = Upgrades.saltCost(cellar);
-    State.levelUpSalt('s_bonus1');
+    State.levelUpSalt('s_benefice');
     const cost1 = Upgrades.saltCost(cellar);
     expect(cost1).toBeGreaterThan(cost0);
   });
@@ -82,36 +82,36 @@ describe('Upgrades.buyGold', () => {
 
 describe('Upgrades.buySalt', () => {
   test('returns false when not enough salt', () => {
-    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_bonus1');
+    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_benefice');
     expect(Upgrades.buySalt(cellar)).toBe(false);
   });
 
   test('returns true and levels up when enough salt', () => {
-    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_bonus1');
+    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_benefice');
     State.addSalt(cellar.baseCost);
     expect(Upgrades.buySalt(cellar)).toBe(true);
-    expect(State.get().saltLevels['s_bonus1']).toBe(1);
+    expect(State.get().saltLevels['s_benefice']).toBe(1);
   });
 
   test('deducts salt on purchase', () => {
-    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_bonus1');
+    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_benefice');
     State.addSalt(100);
     Upgrades.buySalt(cellar);
     expect(State.get().salt).toBe(100 - cellar.baseCost);
   });
 
   test('returns false at max level', () => {
-    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_bonus1');
-    for (let i = 0; i < cellar.max; i++) State.levelUpSalt('s_bonus1');
+    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_benefice');
+    for (let i = 0; i < cellar.max; i++) State.levelUpSalt('s_benefice');
     State.addSalt(99999);
     expect(Upgrades.buySalt(cellar)).toBe(false);
   });
 
   test('recomputes saltBonus after purchase', () => {
-    const cellar = Config.SALT_UPGRADES.find(u => u.id === 's_bonus1');
+    const benefice = Config.SALT_UPGRADES.find(u => u.id === 's_benefice');
     State.addSalt(99);
-    Upgrades.buySalt(cellar);
-    expect(State.get().saltBonus).toBeCloseTo(1.3);
+    Upgrades.buySalt(benefice);
+    expect(State.get().saltBonus).toBeCloseTo(1.1);
   });
 });
 
@@ -133,13 +133,6 @@ describe('Upgrades.recompute', () => {
     expect(State.get().autoRate).toBe(0);
   });
 
-  test('clickPermMult from salt doubles clickPower', () => {
-    State.levelUpGold('g_quill'); // +1 clickAdd
-    State.levelUpSalt('s_click1'); // 2x clickPermMult
-    State.recomputeSalt();
-    Upgrades.recompute();
-    expect(State.get().clickPower).toBe(4); // (1+1) * 2
-  });
 
 });
 

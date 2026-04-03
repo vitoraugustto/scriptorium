@@ -7,7 +7,7 @@ const saltCost = (u) =>
   Math.floor(u.baseCost * Math.pow(u.costMult, State.get().saltLevels[u.id]));
 
 const recompute = () => {
-  const { goldLevels, saltBonus, autoPermMult, clickPermMult } = State.get();
+  const { goldLevels, saltBonus } = State.get();
   let ca=0, cm=1, aa=0;
   Config.GOLD_UPGRADES.forEach(u => {
     const l=goldLevels[u.id]; if(!l) return;
@@ -16,8 +16,8 @@ const recompute = () => {
     if(u.effect==='autoAdd')   aa += u.val*l;
   });
   State.setStats({
-    click: Math.max(1, Math.round((1 + ca) * cm * clickPermMult)),
-    auto:  Math.round(aa * autoPermMult * saltBonus),
+    click: Math.max(1, Math.round((1 + ca) * cm)),
+    auto:  Math.round(aa * saltBonus),
   });
 };
 

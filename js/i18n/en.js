@@ -56,18 +56,6 @@ export default {
   DEBUG_APPLY:             'Apply',
 
   // Upgrades — Salt
-  UPGRADE_S_BONUS1_NAME:  'Salt Cellar',
-  UPGRADE_S_BONUS1_DESC:  'Permanent +30% bonus to all production',
-  UPGRADE_S_START1_NAME:  "Scribe's Provisions",
-  UPGRADE_S_START1_DESC:  'Begin each codex with denarii to hire an apprentice',
-  UPGRADE_S_PAGES1_NAME:  'Prepared Vellum',
-  UPGRADE_S_PAGES1_DESC:  '+1 denarius per page across all codices',
-  UPGRADE_S_AUTO1_NAME:   'Eternal Scriptorium',
-  UPGRADE_S_AUTO1_DESC:   'Permanently doubles letters per second',
-  UPGRADE_S_CLICK1_NAME:  'Golden Quill',
-  UPGRADE_S_CLICK1_DESC:  'Permanently doubles letters per keystroke',
-  UPGRADE_S_CAPITAL_NAME: 'Illuminated Capital',
-  UPGRADE_S_CAPITAL_DESC: 'Adds the large capital letter to each folio page',
-  UPGRADE_S_CAPITAL2_NAME: 'Golden Capital',
-  UPGRADE_S_CAPITAL2_DESC: 'Adorns the capital with gold leaf and an ornate border',
+  UPGRADE_S_BENEFICE_NAME: 'Benefice',
+  UPGRADE_S_BENEFICE_DESC: 'A permanent grant from the scriptorium. Each level raises all production by 10%.',
 };

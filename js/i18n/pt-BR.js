@@ -56,18 +56,6 @@ export default {
   DEBUG_APPLY:             'Aplicar',
 
   // Upgrades — Sal
-  UPGRADE_S_BONUS1_NAME:  'Saleiro',
-  UPGRADE_S_BONUS1_DESC:  '+30% permanente em toda a produção',
-  UPGRADE_S_START1_NAME:  'Provisões do Escriba',
-  UPGRADE_S_START1_DESC:  'Comece cada códice com denários para contratar um aprendiz',
-  UPGRADE_S_PAGES1_NAME:  'Vitela Preparada',
-  UPGRADE_S_PAGES1_DESC:  '+1 denário por página em todos os códices',
-  UPGRADE_S_AUTO1_NAME:   'Escritório Eterno',
-  UPGRADE_S_AUTO1_DESC:   'Dobra permanentemente as letras por segundo',
-  UPGRADE_S_CLICK1_NAME:  'Pena de Ouro',
-  UPGRADE_S_CLICK1_DESC:  'Dobra permanentemente as letras por tecla',
-  UPGRADE_S_CAPITAL_NAME: 'Capital Iluminada',
-  UPGRADE_S_CAPITAL_DESC: 'Adiciona a letra capital a cada página do fólio',
-  UPGRADE_S_CAPITAL2_NAME: 'Capital Dourada',
-  UPGRADE_S_CAPITAL2_DESC: 'Adorna a capital com folha de ouro e uma borda ornamentada',
+  UPGRADE_S_BENEFICE_NAME: 'Benefício',
+  UPGRADE_S_BENEFICE_DESC: 'Uma concessão permanente do escritório. Cada nível aumenta toda a produção em 10%.',
 };

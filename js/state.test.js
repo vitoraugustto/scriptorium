@@ -118,19 +118,10 @@ describe('State.addLetters', () => {
     expect(gold).toBe(1 + 3 + 1); // page1: 1+3, page2: 1
   });
 
-  test('goldPerPage bonus is applied', () => {
-    State.get(); // ensure state is accessible
-    // simulate goldPerPage via recomputeSalt with a salt upgrade
-    State.levelUpSalt('s_pages1');
-    State.recomputeSalt();
-    const { gold } = State.addLetters(100);
-    expect(gold).toBe(2); // 1 base + 1 goldPerPage
-  });
-
   test('saltBonus multiplier is applied', () => {
-    State.levelUpSalt('s_bonus1');
+    State.levelUpSalt('s_benefice');
     State.recomputeSalt();
-    const saltBonus = State.get().saltBonus; // 1 + 0.3 = 1.3
+    const saltBonus = State.get().saltBonus; // 1 + 0.1 = 1.1
     const { gold } = State.addLetters(100);
     expect(gold).toBe(Math.ceil(1 * saltBonus));
   });
@@ -154,8 +145,8 @@ describe('State.levelUpGold / levelUpSalt', () => {
   });
 
   test('levelUpSalt increments the level', () => {
-    State.levelUpSalt('s_bonus1');
-    expect(State.get().saltLevels['s_bonus1']).toBe(1);
+    State.levelUpSalt('s_benefice');
+    expect(State.get().saltLevels['s_benefice']).toBe(1);
   });
 });
 
@@ -205,42 +196,24 @@ describe('State.bindCodex', () => {
     expect(State.get().goldLevels['g_quill']).toBe(0);
   });
 
-  test('sets gold to startGold after bind', () => {
+  test('resets gold to 0 after bind', () => {
     State.bindCodex();
-    expect(State.get().gold).toBe(State.get().startGold);
+    expect(State.get().gold).toBe(0);
   });
 });
 
 describe('State.recomputeSalt', () => {
-  test('saltBonus accumulates with Salt Cellar levels', () => {
-    State.levelUpSalt('s_bonus1');
-    State.levelUpSalt('s_bonus1');
+  test('saltBonus accumulates with Benefice levels', () => {
+    State.levelUpSalt('s_benefice');
+    State.levelUpSalt('s_benefice');
     State.recomputeSalt();
-    expect(State.get().saltBonus).toBeCloseTo(1.6);
+    expect(State.get().saltBonus).toBeCloseTo(1.2);
   });
 
-  test('startGold increases with Scribe Provisions', () => {
-    State.levelUpSalt('s_start1');
+  test('saltBonus reaches 2.0 at max level (10)', () => {
+    for (let i = 0; i < 10; i++) State.levelUpSalt('s_benefice');
     State.recomputeSalt();
-    expect(State.get().startGold).toBe(50);
-  });
-
-  test('goldPerPage increases with Prepared Vellum', () => {
-    State.levelUpSalt('s_pages1');
-    State.recomputeSalt();
-    expect(State.get().goldPerPage).toBe(1);
-  });
-
-  test('autoPermMult doubles with Eternal Scriptorium', () => {
-    State.levelUpSalt('s_auto1');
-    State.recomputeSalt();
-    expect(State.get().autoPermMult).toBe(2);
-  });
-
-  test('clickPermMult doubles with Golden Quill', () => {
-    State.levelUpSalt('s_click1');
-    State.recomputeSalt();
-    expect(State.get().clickPermMult).toBe(2);
+    expect(State.get().saltBonus).toBeCloseTo(2.0);
   });
 });
 
@@ -288,13 +261,13 @@ describe('State.reset', () => {
   });
 
   test('resets all salt upgrade levels', () => {
-    State.levelUpSalt('s_bonus1');
+    State.levelUpSalt('s_benefice');
     State.reset();
-    expect(State.get().saltLevels['s_bonus1']).toBe(0);
+    expect(State.get().saltLevels['s_benefice']).toBe(0);
   });
 
   test('resets saltBonus to 1.0', () => {
-    State.levelUpSalt('s_bonus1');
+    State.levelUpSalt('s_benefice');
     State.recomputeSalt();
     State.reset();
     expect(State.get().saltBonus).toBe(1.0);
