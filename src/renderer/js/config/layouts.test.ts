@@ -1,4 +1,4 @@
-import { makeLayout, FOLIO_LAYOUTS, FOLIO } from './layouts.js';
+import { makeLayout, FOLIO_LAYOUTS, FOLIO } from './layouts';
 
 describe('FOLIO_LAYOUTS', () => {
   test('has single, double, quad', () => {

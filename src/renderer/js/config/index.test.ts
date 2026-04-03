@@ -1,4 +1,4 @@
-import Config from './index.js';
+import Config from './index';
 
 test('is frozen', () => {
   expect(Object.isFrozen(Config)).toBe(true);

@@ -1,4 +1,4 @@
-import Env from './env.js';
+import Env from './env';
 
 describe('Env', () => {
   test('is frozen', () => {

@@ -1,8 +1,8 @@
-import Config from './config/index.js';
-import State from './state.js';
-import Upgrades from './upgrades.js';
-import UI from './ui/index.js';
-import I18n from './i18n/index.js';
+import Config from './config/index';
+import State from './state';
+import Upgrades from './upgrades';
+import UI from './ui/index';
+import I18n from './i18n/index';
 
 let _activeTab = 'dn';
 

@@ -1,6 +1,6 @@
-import Config from './config/index.js';
-import State from './state.js';
-import Upgrades from './upgrades.js';
+import Config from './config/index';
+import State from './state';
+import Upgrades from './upgrades';
 
 beforeEach(() => {
   State.reset();

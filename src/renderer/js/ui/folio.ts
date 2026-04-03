@@ -1,5 +1,5 @@
-import Config from '../config/index.js';
-import State from '../state.js';
+import Config from '../config/index';
+import State from '../state';
 
 const svgEl = (tag) => document.createElementNS('http://www.w3.org/2000/svg', tag);
 const $ = (id) => document.getElementById(id);

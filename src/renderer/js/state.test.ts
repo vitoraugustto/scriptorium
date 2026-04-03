@@ -1,4 +1,4 @@
-import State from './state.js';
+import State from './state';
 
 // state is a singleton module — reset before each test
 beforeEach(() => {

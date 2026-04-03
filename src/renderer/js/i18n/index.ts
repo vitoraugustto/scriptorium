@@ -1,5 +1,5 @@
-import en from './en.js';
-import ptBR from './pt-BR.js';
+import en from './en';
+import ptBR from './pt-BR';
 
 const LOCALES = { en, 'pt-BR': ptBR };
 let _locale = localStorage.getItem('lang') || 'en';

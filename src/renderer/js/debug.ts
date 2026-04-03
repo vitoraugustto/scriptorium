@@ -1,9 +1,9 @@
-import Env from './env.js';
-import State from './state.js';
-import Upgrades from './upgrades.js';
-import UI from './ui/index.js';
-import Main from './main.js';
-import I18n from './i18n/index.js';
+import Env from './env';
+import State from './state';
+import Upgrades from './upgrades';
+import UI from './ui/index';
+import Main from './main';
+import I18n from './i18n/index';
 
 const _refresh = () => Main.refresh();
 

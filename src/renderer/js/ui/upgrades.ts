@@ -1,8 +1,8 @@
-import Config from '../config/index.js';
-import State from '../state.js';
-import UpgradesLogic from '../upgrades.js';
-import I18n from '../i18n/index.js';
-import { fmt, fmtSalt } from './hud.js';
+import Config from '../config/index';
+import State from '../state';
+import UpgradesLogic from '../upgrades';
+import I18n from '../i18n/index';
+import { fmt, fmtSalt } from './hud';
 
 const $ = (id) => document.getElementById(id);
 

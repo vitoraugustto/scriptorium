@@ -1,6 +1,6 @@
-import Config from '../config/index.js';
-import State from '../state.js';
-import I18n from '../i18n/index.js';
+import Config from '../config/index';
+import State from '../state';
+import I18n from '../i18n/index';
 
 const fmt = (n) => {
   n = Math.floor(n);

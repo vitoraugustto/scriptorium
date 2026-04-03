@@ -1,4 +1,4 @@
-import { PAGES_PER_CODEX, AUTO_TICK_MS, SCRIBE_TITLES, LOREM } from './constants.js';
+import { PAGES_PER_CODEX, AUTO_TICK_MS, SCRIBE_TITLES, LOREM } from './constants';
 
 test('PAGES_PER_CODEX is 300', () => {
   expect(PAGES_PER_CODEX).toBe(300);

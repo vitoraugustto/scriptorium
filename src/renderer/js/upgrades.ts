@@ -1,5 +1,5 @@
-import Config from './config/index.js';
-import State from './state.js';
+import Config from './config/index';
+import State from './state';
 
 const goldCost = (u) =>
   Math.floor(u.baseCost * Math.pow(u.costMult, State.get().goldLevels[u.id]));

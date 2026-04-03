@@ -1,4 +1,4 @@
-import { GOLD_UPGRADES, SALT_UPGRADES } from './upgrades.js';
+import { GOLD_UPGRADES, SALT_UPGRADES } from './upgrades';
 
 describe('GOLD_UPGRADES', () => {
   test('has at least one upgrade', () => {
