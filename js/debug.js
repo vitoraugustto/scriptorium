@@ -27,7 +27,7 @@ const _inputSections = [
     icon:      'pencil-line',
     phKey:     'DEBUG_LETTERS_PH',
     toastKey:  'DEBUG_LETTERS_TOAST',
-    apply:     (n) => State.setStats({ click: n, auto: State.get().autoRate }),
+    apply:     (n) => State.addLetters(n),
   },
 ];
 
