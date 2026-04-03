@@ -3,58 +3,59 @@ import State from './state.js';
 import Upgrades from './upgrades.js';
 import UI from './ui/index.js';
 import Main from './main.js';
+import I18n from './i18n/index.js';
 
 const _refresh = () => Main.refresh();
 
 const _inputSections = [
   {
-    title: 'Denarii',
-    icon: 'coins',
-    placeholder: 'amount',
-    toast: (n) => `+${n} denarii added`,
-    apply: (n) => State.addGold(n),
+    titleKey:  'DEBUG_DENARII',
+    icon:      'coins',
+    phKey:     'DEBUG_DENARII_PH',
+    toastKey:  'DEBUG_DENARII_TOAST',
+    apply:     (n) => State.addGold(n),
   },
   {
-    title: 'Salt',
-    icon: 'gem',
-    placeholder: 'amount',
-    toast: (n) => `+${n} g salt added`,
-    apply: (n) => State.addSalt(n),
+    titleKey:  'DEBUG_SALT',
+    icon:      'gem',
+    phKey:     'DEBUG_SALT_PH',
+    toastKey:  'DEBUG_SALT_TOAST',
+    apply:     (n) => State.addSalt(n),
   },
   {
-    title: 'Letters per keystroke',
-    icon: 'pencil-line',
-    placeholder: 'value',
-    toast: (n) => `letters/keystroke set to ${n}`,
-    apply: (n) => State.setStats({ click: n, auto: State.get().autoRate }),
+    titleKey:  'DEBUG_LETTERS',
+    icon:      'pencil-line',
+    phKey:     'DEBUG_LETTERS_PH',
+    toastKey:  'DEBUG_LETTERS_TOAST',
+    apply:     (n) => State.setStats({ click: n, auto: State.get().autoRate }),
   },
 ];
 
 const _layoutSection = {
-  title: 'Layout',
+  titleKey: 'DEBUG_LAYOUT',
   icon: 'layout',
   actions: [
-    { label: 'Single', fn: () => UI.setLayout('single') },
-    { label: 'Double', fn: () => UI.setLayout('double') },
-    { label: 'Quad',   fn: () => UI.setLayout('quad') },
+    { labelKey: 'DEBUG_SINGLE', fn: () => UI.setLayout('single') },
+    { labelKey: 'DEBUG_DOUBLE', fn: () => UI.setLayout('double') },
+    { labelKey: 'DEBUG_QUAD',   fn: () => UI.setLayout('quad') },
   ],
 };
 
 const _resetSection = {
-  title: 'Reset',
+  titleKey: 'DEBUG_RESET',
   icon: 'rotate-ccw',
   actions: [
-    { label: 'Reset all progress', fn: () => { State.reset(); Upgrades.recompute(); UI.clearFolio(); } },
+    { labelKey: 'DEBUG_RESET_BTN', fn: () => { State.reset(); Upgrades.recompute(); UI.clearFolio(); } },
   ],
 };
 
-const _makeInputSection = ({ title, icon, placeholder, apply, toast }, divided) => {
+const _makeInputSection = ({ titleKey, icon, phKey, apply, toastKey }, divided) => {
   const section = document.createElement('div');
   section.className = 'debug-section' + (divided ? ' debug-section-divided' : '');
 
   const hdr = document.createElement('div');
   hdr.className = 'debug-section-title';
-  hdr.innerHTML = `<i data-lucide="${icon}"></i><span>${title}</span>`;
+  hdr.innerHTML = `<i data-lucide="${icon}"></i><span>${I18n.t(titleKey)}</span>`;
   section.appendChild(hdr);
 
   const row = document.createElement('div');
@@ -63,18 +64,18 @@ const _makeInputSection = ({ title, icon, placeholder, apply, toast }, divided) 
   const input = document.createElement('input');
   input.type = 'number';
   input.className = 'debug-input';
-  input.placeholder = placeholder;
+  input.placeholder = I18n.t(phKey);
   input.min = '0';
 
   const btn = document.createElement('button');
   btn.className = 'debug-action';
-  btn.textContent = 'Apply';
+  btn.textContent = I18n.t('DEBUG_APPLY');
   btn.addEventListener('click', () => {
     const n = parseInt(input.value, 10);
     if (!isNaN(n) && n >= 0) {
       apply(n);
       _refresh();
-      UI.showToast(toast(n));
+      UI.showToast(I18n.t(toastKey, n));
       input.value = '';
     }
   });
@@ -88,21 +89,21 @@ const _makeInputSection = ({ title, icon, placeholder, apply, toast }, divided) 
   return section;
 };
 
-const _makeActionSection = ({ title, icon, actions }, divided) => {
+const _makeActionSection = ({ titleKey, icon, actions }, divided) => {
   const section = document.createElement('div');
   section.className = 'debug-section' + (divided ? ' debug-section-divided' : '');
 
   const hdr = document.createElement('div');
   hdr.className = 'debug-section-title';
-  hdr.innerHTML = `<i data-lucide="${icon}"></i><span>${title}</span>`;
+  hdr.innerHTML = `<i data-lucide="${icon}"></i><span>${I18n.t(titleKey)}</span>`;
   section.appendChild(hdr);
 
   const row = document.createElement('div');
   row.className = 'debug-action-row';
-  actions.forEach(({ label, fn }) => {
+  actions.forEach(({ labelKey, fn }) => {
     const b = document.createElement('button');
     b.className = 'debug-action';
-    b.textContent = label;
+    b.textContent = I18n.t(labelKey);
     b.addEventListener('click', () => { fn(); _refresh(); });
     row.appendChild(b);
   });

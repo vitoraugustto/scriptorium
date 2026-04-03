@@ -112,6 +112,14 @@ const init = () => {
   });
   infoPanel.addEventListener('click', e => e.stopPropagation());
 
+  const langSelect = document.getElementById('js-lang-select');
+  langSelect.value = I18n.getLocale();
+  langSelect.addEventListener('change', () => {
+    I18n.setLocale(langSelect.value);
+    UI.refreshStaticLabels();
+    refresh();
+  });
+
   Upgrades.recompute();
   UI.initRules();
   UI.refreshStaticLabels();

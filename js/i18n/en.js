@@ -37,6 +37,24 @@ export default {
   UPGRADE_G_RULING_NAME: 'Parchment Ruling',
   UPGRADE_G_RULING_DESC: 'Lines ruled into the vellum leave traces of red ink. Each red word earns 1 extra denarius when the page turns.',
 
+  // Debug
+  DEBUG_DENARII:           'Denarii',
+  DEBUG_DENARII_PH:        'amount',
+  DEBUG_DENARII_TOAST:     '+{0} denarii added',
+  DEBUG_SALT:              'Salt',
+  DEBUG_SALT_PH:           'amount',
+  DEBUG_SALT_TOAST:        '+{0} g salt added',
+  DEBUG_LETTERS:           'Letters per keystroke',
+  DEBUG_LETTERS_PH:        'value',
+  DEBUG_LETTERS_TOAST:     'letters/keystroke set to {0}',
+  DEBUG_LAYOUT:            'Layout',
+  DEBUG_SINGLE:            'Single',
+  DEBUG_DOUBLE:            'Double',
+  DEBUG_QUAD:              'Quad',
+  DEBUG_RESET:             'Reset',
+  DEBUG_RESET_BTN:         'Reset all progress',
+  DEBUG_APPLY:             'Apply',
+
   // Upgrades — Salt
   UPGRADE_S_BONUS1_NAME:  'Salt Cellar',
   UPGRADE_S_BONUS1_DESC:  'Permanent +30% bonus to all production',

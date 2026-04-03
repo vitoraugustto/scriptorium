@@ -37,6 +37,24 @@ export default {
   UPGRADE_G_RULING_NAME: 'Pauta de Pergaminho',
   UPGRADE_G_RULING_DESC: 'Linhas traçadas no vitelo deixam marcas de tinta vermelha. Cada palavra vermelha rende 1 denário extra quando a página vira.',
 
+  // Debug
+  DEBUG_DENARII:           'Denários',
+  DEBUG_DENARII_PH:        'quantidade',
+  DEBUG_DENARII_TOAST:     '+{0} denários adicionados',
+  DEBUG_SALT:              'Sal',
+  DEBUG_SALT_PH:           'quantidade',
+  DEBUG_SALT_TOAST:        '+{0} g de sal adicionados',
+  DEBUG_LETTERS:           'Letras por tecla',
+  DEBUG_LETTERS_PH:        'valor',
+  DEBUG_LETTERS_TOAST:     'letras/tecla definido para {0}',
+  DEBUG_LAYOUT:            'Layout',
+  DEBUG_SINGLE:            'Simples',
+  DEBUG_DOUBLE:            'Duplo',
+  DEBUG_QUAD:              'Quádruplo',
+  DEBUG_RESET:             'Reiniciar',
+  DEBUG_RESET_BTN:         'Reiniciar todo o progresso',
+  DEBUG_APPLY:             'Aplicar',
+
   // Upgrades — Sal
   UPGRADE_S_BONUS1_NAME:  'Saleiro',
   UPGRADE_S_BONUS1_DESC:  '+30% permanente em toda a produção',

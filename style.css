@@ -149,6 +149,17 @@ body {
   width: 20px; height: 20px;
   font-size: 0.65rem;
 }
+.lang-select {
+  background: none;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  color: var(--ink4);
+  font-family: 'IM Fell English', serif;
+  font-size: 0.72rem;
+  padding: 2px 4px;
+  cursor: pointer;
+  outline: none;
+}
 .info-panel {
   position: absolute;
   top: calc(100% + 8px);
