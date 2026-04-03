@@ -25,15 +25,25 @@ Codex complete   →  earns Salt (permanent)
 index.html
 style.css
 js/
-  config.js    — constants: UPGRADES, FOLIO geometry, layout definitions
-  env.js       — DEBUG flag (browser-compatible)
-  state.js     — single source of truth, controlled mutations only
-  upgrades.js  — cost calculation, buy logic, stat derivation
-  ui.js        — all DOM access, folio rendering, floats, toasts
-  main.js      — keyboard input, game loop, tab switching, init
+  config/
+    constants.js      — PAGES_PER_CODEX, AUTO_TICK_MS, SCRIBE_TITLES, LOREM
+    layouts.js        — makeLayout, FOLIO_LAYOUTS, FOLIO
+    upgrades.js       — GOLD_UPGRADES, SALT_UPGRADES definitions
+    index.js          — re-exports all config as frozen default export
+  ui/
+    folio.js          — SVG rendering, line cache, countRedWords
+    hud.js            — fmt, fmtSalt, refreshStats, toasts, floats
+    upgrades.js       — refreshUpgrades (upgrade shop UI)
+    index.js          — re-exports all UI as default export
+  env.js              — DEBUG flag
+  state.js            — single source of truth, controlled mutations only
+  upgrades.js         — cost calculation, buy logic, stat derivation
+  main.js             — keyboard input, game loop, tab switching, init
+  debug.js            — debug panel (only when Env.DEBUG)
+  app.js              — entry point: imports main + debug, calls init
 ```
 
-Module load order: `env → config → state → upgrades → ui → main → debug`
+Module load order: `env → config → state → upgrades → ui → main → debug → app`
 
 ---
 
@@ -43,7 +53,7 @@ Module load order: `env → config → state → upgrades → ui → main → de
 
 **Folio:** SVG 210×300 (7:10 proportion). No visible ruled lines — blank vellum. Text rendered line-by-line — completed lines at opacity 0.76, current line at 0.38. Line cache is append-only, never reordered.
 
-**Folio layouts:** Three layouts rotate randomly on each page turn: `single` (1 column), `double` (2 columns), `quad` (2×2 blocks). Defined via `makeLayout(id, colDefs, opts)` in config.js — adding new layouts is one line. Page capacity (letters per page) is measured at runtime by dry-running `_fitLine` across all slots; no hardcoded value.
+**Folio layouts:** Three layouts rotate randomly on each page turn: `single` (1 column), `double` (2 columns), `quad` (2×2 blocks). Defined via `makeLayout(id, colDefs, opts)` in `config/layouts.js` — adding new layouts is one line. Page capacity (letters per page) is measured at runtime by dry-running `_fitLine` across all slots; no hardcoded value.
 
 **Currencies:**
 - Denarii per page = `ceil((1 + goldPerPage) * saltBonus) + redWordCount`
