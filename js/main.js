@@ -2,6 +2,7 @@ import Config from './config/index.js';
 import State from './state.js';
 import Upgrades from './upgrades.js';
 import UI from './ui/index.js';
+import I18n from './i18n/index.js';
 
 let _activeTab = 'dn';
 
@@ -14,13 +15,13 @@ const refresh = () => {
 const handleBuyGold = (u) => {
   if (!Upgrades.buyGold(u)) return;
   refresh();
-  UI.showToast(`${u.name} level ${State.get().goldLevels[u.id]}`);
+  UI.showToast(I18n.t('TOAST_UPGRADE_GOLD', I18n.t(`UPGRADE_${u.id.toUpperCase()}_NAME`, u.name), State.get().goldLevels[u.id]));
 };
 
 const handleBuySalt = (u) => {
   if (!Upgrades.buySalt(u)) return;
   refresh();
-  UI.showToast(`${u.name} permanent level ${State.get().saltLevels[u.id]}`);
+  UI.showToast(I18n.t('TOAST_UPGRADE_SALT', I18n.t(`UPGRADE_${u.id.toUpperCase()}_NAME`, u.name), State.get().saltLevels[u.id]));
 };
 
 // ── Keyboard input ───────────────────────────────────────────
@@ -44,7 +45,7 @@ const handleKey = (e) => {
       window.innerHeight * 0.5,
       `+${UI.fmt(gold)} <i data-lucide="coins" class="float-icon"></i>`, 'dn'
     );
-    if (State.canBind()) UI.showToast('Codex complete, bind it in the sidebar!');
+    if (State.canBind()) UI.showToast(I18n.t('TOAST_CODEX_COMPLETE'));
   }
 
   refresh();
@@ -61,7 +62,7 @@ const handleBind = () => {
     window.innerHeight * 0.4,
     `+${UI.fmtSalt(saltGain)} <i data-lucide="gem" class="float-icon"></i>`, 'salt'
   );
-  UI.showToast(`Codex ${State.get().codices} bound, +${UI.fmtSalt(saltGain)} salt`);
+  UI.showToast(I18n.t('TOAST_CODEX_BOUND', State.get().codices, UI.fmtSalt(saltGain)));
 };
 
 // ── Game loop (auto scribes) ─────────────────────────────────
@@ -74,7 +75,7 @@ const startLoop = () => {
     if (pages > 0) {
       const layouts = Object.keys(Config.FOLIO_LAYOUTS);
       UI.setLayout(layouts[Math.floor(Math.random() * layouts.length)]);
-      if (State.canBind()) UI.showToast('Codex complete, bind it in the sidebar!');
+      if (State.canBind()) UI.showToast(I18n.t('TOAST_CODEX_COMPLETE'));
     }
     UI.refreshStats();
     UI.refreshUpgrades(handleBuyGold, handleBuySalt);
@@ -113,6 +114,7 @@ const init = () => {
 
   Upgrades.recompute();
   UI.initRules();
+  UI.refreshStaticLabels();
   refresh();
   startLoop();
 };

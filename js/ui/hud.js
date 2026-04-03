@@ -1,5 +1,6 @@
 import Config from '../config/index.js';
 import State from '../state.js';
+import I18n from '../i18n/index.js';
 
 const fmt = (n) => {
   n = Math.floor(n);
@@ -17,13 +18,19 @@ const fmtSalt = (n) => {
 };
 const $ = (id) => document.getElementById(id);
 
+const refreshStaticLabels = () => {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = I18n.t(el.dataset.i18n);
+  });
+};
+
 const refreshStats = () => {
   const s = State.get();
 
   $('js-gold').textContent = fmt(s.gold);
   $('js-salt').textContent = fmtSalt(s.salt);
 
-  const title = Config.SCRIBE_TITLES[Math.min(s.codices, Config.SCRIBE_TITLES.length-1)];
+  const title = I18n.t(`TITLE_${Math.min(s.codices, Config.SCRIBE_TITLES.length-1)}`);
   $('js-scribe-title').textContent = title;
   $('js-info-gold').textContent    = fmt(s.gold);
   $('js-info-salt').textContent    = fmtSalt(s.salt);
@@ -46,8 +53,8 @@ const refreshStats = () => {
   $('js-codex-btn').disabled = !can;
   const left = Math.max(0, Config.PAGES_PER_CODEX - s.currentPage + 1);
   $('js-codex-note').textContent = can
-    ? `ready to bind — gain ${fmtSalt(s.codices+1)}`
-    : `${left.toLocaleString()} page${left!==1?'s':''} remaining`;
+    ? I18n.t('CODEX_READY', fmtSalt(s.codices+1))
+    : I18n.t(left !== 1 ? 'CODEX_REMAINING_PLURAL' : 'CODEX_REMAINING', left.toLocaleString());
 };
 
 const flashKey = () => {
@@ -76,4 +83,4 @@ const showToast = (msg) => {
   _tt=setTimeout(()=>el.classList.remove('show'),2400);
 };
 
-export { fmt, fmtSalt, refreshStats, flashKey, spawnFloat, showToast };
+export { fmt, fmtSalt, refreshStats, refreshStaticLabels, flashKey, spawnFloat, showToast };

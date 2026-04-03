@@ -22,6 +22,7 @@
       <i data-lucide="gem" class="tr-icon salt"></i>
       <span class="tr-val salt" id="js-salt">0 g</span>
     </div>
+    <button class="popup-btn lang-btn" id="js-lang-btn">EN</button>
     <button class="popup-btn info-btn" id="js-info-btn">i</button>
     <div class="popup-panel info-panel" id="js-info-panel">
       <div class="popup-row">
@@ -29,27 +30,27 @@
         <span class="popup-val" id="js-scribe-title">Novice Scribe</span>
       </div>
       <div class="popup-row">
-        <span class="popup-lbl"><i data-lucide="coins" class="popup-lbl-icon dn"></i> Denarii</span>
+        <span class="popup-lbl"><i data-lucide="coins" class="popup-lbl-icon dn"></i> <span data-i18n="LABEL_DENARII">Denarii</span></span>
         <span class="popup-val dn" id="js-info-gold">5</span>
       </div>
       <div class="popup-row">
-        <span class="popup-lbl"><i data-lucide="gem" class="popup-lbl-icon salt"></i> Salt</span>
+        <span class="popup-lbl"><i data-lucide="gem" class="popup-lbl-icon salt"></i> <span data-i18n="LABEL_SALT">Salt</span></span>
         <span class="popup-val salt" id="js-info-salt">0 g</span>
       </div>
       <div class="popup-row">
-        <span class="popup-lbl">Codices</span>
+        <span class="popup-lbl" data-i18n="LABEL_CODICES">Codices</span>
         <span class="popup-val" id="js-codex-count">0</span>
       </div>
       <div class="popup-row">
-        <span class="popup-lbl">Letters/s</span>
+        <span class="popup-lbl" data-i18n="LABEL_LETTERS_PER_S">Letters/s</span>
         <span class="popup-val" id="js-auto-rate">0</span>
       </div>
       <div class="popup-row">
-        <span class="popup-lbl">Per keystroke</span>
+        <span class="popup-lbl" data-i18n="LABEL_PER_KEYSTROKE">Per keystroke</span>
         <span class="popup-val" id="js-info-click">1</span>
       </div>
       <div class="popup-row">
-        <span class="popup-lbl">Salt bonus</span>
+        <span class="popup-lbl" data-i18n="LABEL_SALT_BONUS">Salt bonus</span>
         <span class="popup-val salt" id="js-info-bonus">+0%</span>
       </div>
     </div>
@@ -64,12 +65,12 @@
 
     <div class="progress-block">
       <div class="prog-row">
-        <span class="prog-lbl">Page</span>
+        <span class="prog-lbl" data-i18n="LABEL_PAGE">Page</span>
         <div class="prog-track"><div class="prog-fill page" id="js-prog-page"></div></div>
         <span class="prog-stat" id="js-prog-page-stat">0 / 1,200</span>
       </div>
       <div class="prog-row">
-        <span class="prog-lbl">Codex</span>
+        <span class="prog-lbl" data-i18n="LABEL_CODEX">Codex</span>
         <div class="prog-track"><div class="prog-fill codex" id="js-prog-codex"></div></div>
         <span class="prog-stat" id="js-prog-codex-stat">p. 1 / 300</span>
       </div>
@@ -113,8 +114,8 @@
   <div class="sidebar">
 
     <div class="sidebar-tabs">
-      <button class="stab active" id="stab-dn"   data-tab="dn"><i data-lucide="coins"></i> Denarii</button>
-      <button class="stab salt"   id="stab-salt" data-tab="salt"><i data-lucide="gem"></i> Salt</button>
+      <button class="stab active" id="stab-dn"   data-tab="dn"><i data-lucide="coins"></i> <span data-i18n="TAB_DENARII">Denarii</span></button>
+      <button class="stab salt"   id="stab-salt" data-tab="salt"><i data-lucide="gem"></i> <span data-i18n="TAB_SALT">Salt</span></button>
     </div>
 
     <div class="sidebar-panel active" id="panel-dn">

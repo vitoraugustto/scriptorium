@@ -1,1 +1,55 @@
-export default {};
+export default {
+  // Labels
+  LABEL_DENARII:       'Denarii',
+  LABEL_SALT:          'Salt',
+  LABEL_CODICES:       'Codices',
+  LABEL_LETTERS_PER_S: 'Letters/s',
+  LABEL_PER_KEYSTROKE: 'Per keystroke',
+  LABEL_SALT_BONUS:    'Salt bonus',
+  LABEL_PAGE:          'Page',
+  LABEL_CODEX:         'Codex',
+  TAB_DENARII:         'Denarii',
+  TAB_SALT:            'Salt',
+
+  // HUD dynamic
+  CODEX_READY:            'ready to bind — gain {0}',
+  CODEX_REMAINING:        '{0} page remaining',
+  CODEX_REMAINING_PLURAL: '{0} pages remaining',
+  UPGRADE_DONE:           'done',
+
+  // Toasts
+  TOAST_CODEX_COMPLETE: 'Codex complete, bind it in the sidebar!',
+  TOAST_CODEX_BOUND:    'Codex {0} bound, +{1} salt',
+  TOAST_UPGRADE_GOLD:   '{0} level {1}',
+  TOAST_UPGRADE_SALT:   '{0} permanent level {1}',
+
+  // Scribe titles
+  TITLE_0: 'Novice Scribe',
+  TITLE_1: 'Skilled Copyist',
+  TITLE_2: 'Master Calligrapher',
+  TITLE_3: 'Keeper of the Scriptorium',
+  TITLE_4: 'Royal Illuminator',
+  TITLE_5: 'Eternal Archivist',
+
+  // Upgrades — Denarii
+  UPGRADE_G_QUILL_NAME:  'Goose Quill',
+  UPGRADE_G_QUILL_DESC:  "A well-cut quill from the wing of a grey goose, the scribe's most faithful instrument",
+  UPGRADE_G_RULING_NAME: 'Parchment Ruling',
+  UPGRADE_G_RULING_DESC: 'Lines ruled into the vellum leave traces of red ink. Each red word earns 1 extra denarius when the page turns.',
+
+  // Upgrades — Salt
+  UPGRADE_S_BONUS1_NAME:  'Salt Cellar',
+  UPGRADE_S_BONUS1_DESC:  'Permanent +30% bonus to all production',
+  UPGRADE_S_START1_NAME:  "Scribe's Provisions",
+  UPGRADE_S_START1_DESC:  'Begin each codex with denarii to hire an apprentice',
+  UPGRADE_S_PAGES1_NAME:  'Prepared Vellum',
+  UPGRADE_S_PAGES1_DESC:  '+1 denarius per page across all codices',
+  UPGRADE_S_AUTO1_NAME:   'Eternal Scriptorium',
+  UPGRADE_S_AUTO1_DESC:   'Permanently doubles letters per second',
+  UPGRADE_S_CLICK1_NAME:  'Golden Quill',
+  UPGRADE_S_CLICK1_DESC:  'Permanently doubles letters per keystroke',
+  UPGRADE_S_CAPITAL_NAME: 'Illuminated Capital',
+  UPGRADE_S_CAPITAL_DESC: 'Adds the large capital letter to each folio page',
+  UPGRADE_S_CAPITAL2_NAME: 'Golden Capital',
+  UPGRADE_S_CAPITAL2_DESC: 'Adorns the capital with gold leaf and an ornate border',
+};
