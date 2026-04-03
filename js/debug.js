@@ -111,6 +111,26 @@ const _makeActionSection = ({ titleKey, icon, actions }, divided) => {
   return section;
 };
 
+let _panel = null;
+
+const _buildPanel = () => {
+  if (_panel) _panel.remove();
+  _panel = document.createElement('div');
+  _panel.className = 'popup-panel debug-panel';
+  _inputSections.forEach((s) => _panel.appendChild(_makeInputSection(s, true)));
+  _panel.appendChild(_makeActionSection(_layoutSection, true));
+  _panel.appendChild(_makeActionSection(_resetSection, false));
+  _panel.addEventListener('click', (e) => e.stopPropagation());
+  document.body.appendChild(_panel);
+};
+
+const refreshLabels = () => {
+  if (!_panel) return;
+  const wasOpen = _panel.classList.contains('open');
+  _buildPanel();
+  if (wasOpen) _panel.classList.add('open');
+};
+
 const init = () => {
   if (!Env.DEBUG) return;
 
@@ -118,29 +138,20 @@ const init = () => {
   btn.className = 'popup-btn debug-btn';
   btn.innerHTML = '<i data-lucide="bug"></i>';
 
-  const panel = document.createElement('div');
-  panel.className = 'popup-panel debug-panel';
-
-  _inputSections.forEach((s) => {
-    panel.appendChild(_makeInputSection(s, true));
-  });
-  panel.appendChild(_makeActionSection(_layoutSection, true));
-  panel.appendChild(_makeActionSection(_resetSection, false));
+  _buildPanel();
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    const open = panel.classList.toggle('open');
+    const open = _panel.classList.toggle('open');
     btn.classList.toggle('open', open);
   });
   document.addEventListener('click', () => {
-    panel.classList.remove('open');
+    _panel.classList.remove('open');
     btn.classList.remove('open');
   });
-  panel.addEventListener('click', (e) => e.stopPropagation());
 
-  document.body.appendChild(panel);
   document.body.appendChild(btn);
   lucide.createIcons();
 };
 
-export default { init };
+export default { init, refreshLabels };

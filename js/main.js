@@ -84,7 +84,7 @@ const startLoop = () => {
 };
 
 // ── Init ─────────────────────────────────────────────────────
-const init = () => {
+const init = (onLocaleChange = () => {}) => {
   document.addEventListener('keydown', handleKey);
 
   document.getElementById('js-codex-btn').addEventListener('click', handleBind);
@@ -117,6 +117,7 @@ const init = () => {
   langSelect.addEventListener('change', () => {
     I18n.setLocale(langSelect.value);
     UI.refreshStaticLabels();
+    onLocaleChange();
     refresh();
   });
 
