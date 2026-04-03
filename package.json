@@ -1,13 +1,25 @@
 {
   "name": "scriptorium",
-  "version": "0.1.0",
-  "type": "module",
+  "version": "1.0.0",
+  "description": "Medieval scribe idle clicker game",
+  "main": "out/main/index.js",
   "scripts": {
-    "start": "serve .",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage"
+    "dev":        "electron-vite dev",
+    "build":      "electron-vite build",
+    "start":      "electron-vite preview",
+    "test":       "vitest run --coverage",
+    "test:watch": "vitest"
   },
   "devDependencies": {
-    "jest": "^29.0.0",
-    "serve": "^14.2.6"
+    "@electron-toolkit/utils": "^4.0.0",
+    "@types/node":             "^25.5.2",
+    "@vitest/coverage-v8":    "^4.1.2",
+    "electron":                "^41.1.1",
+    "electron-vite":           "^5.0.0",
+    "jsdom":                   "^29.0.1",
+    "lucide":                  "^1.7.0",
+    "typescript":              "^6.0.2",
+    "vite":                    "^8.0.3",
+    "vitest":                  "^4.1.2"
   }
 }
