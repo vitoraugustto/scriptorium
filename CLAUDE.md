@@ -92,6 +92,13 @@ Salt (permanent): Salt Cellar (+0.3 saltBonus/level), Scribe's Provisions (start
 - No comments unless logic is non-obvious
 - All code in English — UI text is also English
 
+## Testing
+
+- Test files live next to their source file (e.g. `state.test.js` beside `state.js`)
+- Only pure logic is tested (config, state, upgrades) — DOM/browser code is not
+- Coverage runs with every `yarn test` and must stay above 90%
+- When closing a feature, ask the user whether to write tests before committing
+
 ## Git workflow
 
 - Commit autonomously when closing a feature, no need to ask
