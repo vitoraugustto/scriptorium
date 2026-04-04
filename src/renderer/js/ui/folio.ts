@@ -87,7 +87,6 @@ const _buildLines = (target) => {
   let cached = _lines.reduce((s,l)=>s+l.length, 0);
   if (cached >= target) return;
   const L = _layout;
-  const capActive = L.type === 'single' && (State.get().saltLevels['s_capital'] || 0) > 0;
   const totalSlots = L.slots.reduce((s, sl) => s + sl.lines, 0);
 
   let slotIdx = 0, slotLine = _lines.length;
@@ -99,8 +98,7 @@ const _buildLines = (target) => {
 
   while (cached < target && _lines.length < totalSlots) {
     const sl = L.slots[slotIdx];
-    const narrow = capActive && slotIdx === 0 && slotLine < 3;
-    const colW = narrow ? (sl.xEnd - L.xCapEnd) : (sl.xEnd - sl.xStart);
+    const colW = sl.xEnd - sl.xStart;
     const line = _fitLine(colW);
     _lines.push(line);
     cached += line.length;
@@ -152,32 +150,18 @@ const refreshFolio = () => {
   const g = $('js-folio-text');
   g.innerHTML = '';
 
-  // ── capital (single layout only) ─────────────────────────
   const capLetter = $('js-cap-letter');
   const capBox    = $('js-cap-box');
-  const capLvl    = State.get().saltLevels['s_capital']  || 0;
-  const capLvl2   = State.get().saltLevels['s_capital2'] || 0;
   if (capLetter) {
-    const showCap = capLvl > 0 && chars > 0 && _layout.type === 'single';
-    if (showCap) {
-      const first = _lines[0] ? _lines[0][0].toUpperCase() : 'V';
-      capLetter.textContent = first;
-      capLetter.setAttribute('fill','rgba(139,58,26,0.82)');
-      capLetter.setAttribute('opacity','1');
-      capBox.setAttribute('stroke', capLvl2>0 ? 'rgba(184,146,10,0.65)' : 'rgba(184,146,10,0)');
-      capBox.setAttribute('fill',   capLvl2>0 ? 'rgba(248,238,210,0.5)' : 'rgba(248,238,210,0)');
-    } else {
-      capLetter.setAttribute('opacity','0');
-      capBox.setAttribute('stroke','rgba(184,146,10,0)');
-      capBox.setAttribute('fill','rgba(248,238,210,0)');
-    }
+    capLetter.setAttribute('opacity','0');
+    capBox.setAttribute('stroke','rgba(184,146,10,0)');
+    capBox.setAttribute('fill','rgba(248,238,210,0)');
   }
 
   if (!chars) return;
 
   _buildLines(chars);
   const L = _layout;
-  const capActive = capLvl > 0 && chars > 0 && L.type === 'single';
   const rulingLvl = State.get().goldLevels['g_ruling'] || 0;
   let rem = chars;
   let lineIdx = 0;
@@ -187,8 +171,7 @@ const refreshFolio = () => {
       const line = _lines[lineIdx]; if (!line || rem <= 0) break;
       const isComplete = rem >= line.length;
       const display    = isComplete ? line : line.slice(0, rem);
-      const narrow     = capActive && lineIdx === 0 && i < 3;
-      const x = narrow ? L.xCapEnd : sl.xStart;
+      const x = sl.xStart;
       const y = sl.yFirst + i * sl.yStep;
       g.appendChild(_makeTextEl(x, y, display, isComplete ? '0.76' : '0.38', rulingLvl, lineIdx));
       rem -= line.length;
