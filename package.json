@@ -10,7 +10,6 @@
     "test": "vitest run --coverage",
     "test:watch": "vitest",
     "e2e": "yarn build && playwright test",
-    "e2e:ci": "playwright test",
     "e2e:ui": "yarn build && playwright test --ui",
     "e2e:debug": "yarn build && playwright test --debug",
     "prepare": "husky"
