@@ -12,6 +12,7 @@ const _d: GameState = {
   currentPage: 1, codices: 0,
   saltBonus: 1.0,
   clickPower: 1, autoRate: 0,
+  goldPerPage: 0, startingGold: 0,
   goldLevels: {}, saltLevels: {},
 };
 
@@ -30,7 +31,7 @@ const addLetters = (n: number, redWordBonus = 0): { pages: number; gold: number 
   while (_d.letters >= _lettersPerPage) {
     _d.letters -= _lettersPerPage;
     pages++;
-    const gain = Math.ceil(_d.saltBonus);
+    const gain = Math.ceil((1 + _d.goldPerPage) * _d.saltBonus);
     const bonus = pages === 1 ? redWordBonus : 0;
     _d.gold += gain + bonus; _d.totalGold += gain + bonus; gold += gain + bonus;
     _d.currentPage++;
@@ -50,19 +51,23 @@ const levelUpSalt = (id: string): void => { _d.saltLevels[id]++; };
 const canBind = (): boolean => _d.currentPage > Config.PAGES_PER_CODEX;
 
 const recomputeSalt = (): void => {
-  let sb = 1;
+  let sb = 1, gp = 0, sg = 0;
   Config.SALT_UPGRADES.forEach(u => {
     const l = _d.saltLevels[u.id]; if (!l) return;
-    if (u.effect === 'saltBonus') sb += u.val * l;
+    if (u.effect === 'saltBonus')   sb += u.val * l;
+    if (u.effect === 'goldPerPage') gp += u.val * l;
+    if (u.effect === 'startingGold') sg += u.val * l;
   });
   _d.saltBonus = sb;
+  _d.goldPerPage = gp;
+  _d.startingGold = sg;
 };
 
 const bindCodex = (): number => {
   _d.codices++;
   const saltGain = _d.codices;
   _d.salt += saltGain; _d.totalSalt += saltGain;
-  _d.gold = 0;
+  _d.gold = _d.startingGold;
   _d.letters = 0; _d.currentPage = 1;
   Config.GOLD_UPGRADES.forEach(u => { _d.goldLevels[u.id] = 0; });
   return saltGain;
@@ -77,6 +82,7 @@ const reset = (): void => {
   _d.currentPage = 1; _d.codices = 0;
   _d.saltBonus = 1.0;
   _d.clickPower = 1; _d.autoRate = 0;
+  _d.goldPerPage = 0; _d.startingGold = 0;
   Config.GOLD_UPGRADES.forEach(u => { _d.goldLevels[u.id] = 0; });
   Config.SALT_UPGRADES.forEach(u => { _d.saltLevels[u.id] = 0; });
 };

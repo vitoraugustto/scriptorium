@@ -12,11 +12,11 @@ const refreshUpgrades = (
   onGold: (u: GoldUpgrade) => void,
   onSalt: (u: SaltUpgrade) => void,
 ): void => {
-  const { gold, goldLevels, salt, saltLevels } = State.get();
+  const { gold, goldLevels, salt, saltLevels, codices } = State.get();
 
   const gList = $('list-dn');
   gList.innerHTML = '';
-  Config.GOLD_UPGRADES.forEach(u => {
+  Config.GOLD_UPGRADES.filter(u => !u.unlocksAt || codices >= u.unlocksAt).forEach(u => {
     const lvl = goldLevels[u.id], cost = UpgradesLogic.goldCost(u);
     const isMax = lvl >= u.max, can = !isMax && gold >= cost;
     const name = I18n.t(`UPGRADE_${u.id.toUpperCase()}_NAME`, u.name);
@@ -36,7 +36,7 @@ const refreshUpgrades = (
 
   const sList = $('list-salt');
   sList.innerHTML = '';
-  Config.SALT_UPGRADES.forEach(u => {
+  Config.SALT_UPGRADES.filter(u => !u.unlocksAt || codices >= u.unlocksAt).forEach(u => {
     const lvl = saltLevels[u.id], cost = UpgradesLogic.saltCost(u);
     const isMax = lvl >= u.max, can = !isMax && salt >= cost;
     const name = I18n.t(`UPGRADE_${u.id.toUpperCase()}_NAME`, u.name);

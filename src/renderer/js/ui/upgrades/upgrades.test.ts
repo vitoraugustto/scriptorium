@@ -18,16 +18,20 @@ beforeEach(() => {
 describe('refreshUpgrades', () => {
   const noop = vi.fn();
 
-  test('renders gold upgrade rows', () => {
+  test('renders gold upgrade rows (only unlocked)', () => {
+    const { codices } = State.get();
+    const visible = Config.GOLD_UPGRADES.filter(u => !u.unlocksAt || codices >= u.unlocksAt);
     refreshUpgrades(noop, noop);
     const rows = document.querySelectorAll('#list-dn .upgrade-row');
-    expect(rows.length).toBe(Config.GOLD_UPGRADES.length);
+    expect(rows.length).toBe(visible.length);
   });
 
-  test('renders salt upgrade rows', () => {
+  test('renders salt upgrade rows (only unlocked)', () => {
+    const { codices } = State.get();
+    const visible = Config.SALT_UPGRADES.filter(u => !u.unlocksAt || codices >= u.unlocksAt);
     refreshUpgrades(noop, noop);
     const rows = document.querySelectorAll('#list-salt .upgrade-row');
-    expect(rows.length).toBe(Config.SALT_UPGRADES.length);
+    expect(rows.length).toBe(visible.length);
   });
 
   test('locked class when cannot afford gold upgrade', () => {

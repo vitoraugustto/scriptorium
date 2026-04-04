@@ -10,6 +10,8 @@ export interface GameState {
   saltBonus: number;
   clickPower: number;
   autoRate: number;
+  goldPerPage: number;
+  startingGold: number;
   goldLevels: Record<string, number>;
   saltLevels: Record<string, number>;
 }

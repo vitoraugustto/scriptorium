@@ -5,8 +5,9 @@ export interface GoldUpgrade {
   baseCost: number;
   costMult: number;
   max: number;
-  effect: 'clickAdd' | 'clickMult' | 'autoAdd' | 'pageAdd';
+  effect: 'clickAdd' | 'clickMult' | 'autoAdd' | 'autoMult' | 'pageAdd';
   val: number;
+  unlocksAt?: number;
 }
 
 export interface SaltUpgrade {
@@ -16,6 +17,7 @@ export interface SaltUpgrade {
   baseCost: number;
   costMult: number;
   max: number;
-  effect: 'saltBonus';
+  effect: 'saltBonus' | 'startingGold' | 'goldPerPage' | 'autoMult' | 'clickMult';
   val: number;
+  unlocksAt?: number;
 }
