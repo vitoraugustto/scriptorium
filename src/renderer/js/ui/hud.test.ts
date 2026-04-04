@@ -76,7 +76,7 @@ describe('fmtSalt', () => {
 describe('refreshStaticLabels', () => {
   test('updates elements with data-i18n', () => {
     refreshStaticLabels();
-    expect(document.querySelector('[data-i18n="LABEL_SALT"]').textContent).toBe('Salt');
+    expect(document.querySelector('[data-i18n="LABEL_SALT"]')!.textContent).toBe('Salt');
   });
 });
 
@@ -84,13 +84,13 @@ describe('refreshStats', () => {
   test('updates gold display', () => {
     State.addGold(42);
     refreshStats();
-    expect(document.getElementById('js-gold').textContent).toBe('42');
+    expect(document.getElementById('js-gold')!.textContent).toBe('42');
   });
 
   test('updates salt display', () => {
     State.addSalt(5);
     refreshStats();
-    expect(document.getElementById('js-salt').textContent).toBe('5 g');
+    expect(document.getElementById('js-salt')!.textContent).toBe('5 g');
   });
 
   test('updates codex count', () => {
@@ -98,32 +98,32 @@ describe('refreshStats', () => {
     for (let i = 0; i < 300; i++) State.addLetters(1);
     State.bindCodex();
     refreshStats();
-    expect(document.getElementById('js-codex-count').textContent).toBe('1');
+    expect(document.getElementById('js-codex-count')!.textContent).toBe('1');
   });
 
   test('disables codex button when cannot bind', () => {
     refreshStats();
-    expect(document.getElementById('js-codex-btn').disabled).toBe(true);
+    expect((document.getElementById('js-codex-btn') as HTMLButtonElement)!.disabled).toBe(true);
   });
 
   test('enables codex button when can bind', () => {
     State.setPageCapacity(1);
     for (let i = 0; i < 300; i++) State.addLetters(1);
     refreshStats();
-    expect(document.getElementById('js-codex-btn').disabled).toBe(false);
+    expect((document.getElementById('js-codex-btn') as HTMLButtonElement)!.disabled).toBe(false);
   });
 
   test('shows CODEX_READY when can bind', () => {
     State.setPageCapacity(1);
     for (let i = 0; i < 300; i++) State.addLetters(1);
     refreshStats();
-    const note = document.getElementById('js-codex-note').textContent;
+    const note = document.getElementById('js-codex-note')!.textContent;
     expect(note).toContain('ready to bind');
   });
 
   test('shows pages remaining (plural) when far from bind', () => {
     refreshStats();
-    const note = document.getElementById('js-codex-note').textContent;
+    const note = document.getElementById('js-codex-note')!.textContent;
     expect(note).toContain('pages remaining');
   });
 
@@ -131,46 +131,46 @@ describe('refreshStats', () => {
     State.setPageCapacity(1);
     for (let i = 0; i < 299; i++) State.addLetters(1);
     refreshStats();
-    const note = document.getElementById('js-codex-note').textContent;
+    const note = document.getElementById('js-codex-note')!.textContent;
     expect(note).toContain('page remaining');
   });
 
   test('updates auto rate', () => {
     State.setStats({ click: 1, auto: 10 });
     refreshStats();
-    expect(document.getElementById('js-auto-rate').textContent).toBe('10');
+    expect(document.getElementById('js-auto-rate')!.textContent).toBe('10');
   });
 
   test('updates click power', () => {
     State.setStats({ click: 5, auto: 0 });
     refreshStats();
-    expect(document.getElementById('js-info-click').textContent).toBe('5');
+    expect(document.getElementById('js-info-click')!.textContent).toBe('5');
   });
 
   test('updates salt bonus display', () => {
     State.levelUpSalt('s_benefice');
     State.recomputeSalt();
     refreshStats();
-    expect(document.getElementById('js-info-bonus').textContent).toBe('+10%');
+    expect(document.getElementById('js-info-bonus')!.textContent).toBe('+10%');
   });
 
   test('updates scribe title', () => {
     refreshStats();
-    expect(document.getElementById('js-scribe-title').textContent).toBe('Novice Scribe');
+    expect(document.getElementById('js-scribe-title')!.textContent).toBe('Novice Scribe');
   });
 });
 
 describe('flashKey', () => {
   test('adds show class to flash element', () => {
     flashKey();
-    expect(document.getElementById('js-flash').classList.contains('show')).toBe(true);
+    expect(document.getElementById('js-flash')!.classList.contains('show')).toBe(true);
   });
 });
 
 describe('showToast', () => {
   test('sets toast text and show class', () => {
     showToast('hello world');
-    const el = document.getElementById('js-toast');
+    const el = document.getElementById('js-toast')!;
     expect(el.textContent).toBe('hello world');
     expect(el.classList.contains('show')).toBe(true);
   });

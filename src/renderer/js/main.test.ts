@@ -85,13 +85,13 @@ describe('Main tab switching', () => {
   test('clicking salt tab activates salt panel', () => {
     const saltTab = document.querySelector('[data-tab="salt"]') as HTMLElement;
     saltTab.click();
-    expect(document.getElementById('panel-salt').classList.contains('active')).toBe(true);
+    expect(document.getElementById('panel-salt')!.classList.contains('active')).toBe(true);
   });
 
   test('clicking salt tab deactivates dn panel', () => {
     const saltTab = document.querySelector('[data-tab="salt"]') as HTMLElement;
     saltTab.click();
-    expect(document.getElementById('panel-dn').classList.contains('active')).toBe(false);
+    expect(document.getElementById('panel-dn')!.classList.contains('active')).toBe(false);
   });
 
   test('clicking dn tab activates dn panel', () => {
@@ -99,7 +99,7 @@ describe('Main tab switching', () => {
     saltTab.click();
     const dnTab = document.querySelector('[data-tab="dn"]') as HTMLElement;
     dnTab.click();
-    expect(document.getElementById('panel-dn').classList.contains('active')).toBe(true);
+    expect(document.getElementById('panel-dn')!.classList.contains('active')).toBe(true);
   });
 });
 
@@ -107,14 +107,14 @@ describe('Main info panel', () => {
   test('info button toggles panel open', () => {
     const btn = document.getElementById('js-info-btn') as HTMLElement;
     btn.click();
-    expect(document.getElementById('js-info-panel').classList.contains('open')).toBe(true);
+    expect(document.getElementById('js-info-panel')!.classList.contains('open')).toBe(true);
   });
 
   test('document click closes info panel', () => {
     const btn = document.getElementById('js-info-btn') as HTMLElement;
     btn.click();
     document.dispatchEvent(new MouseEvent('click'));
-    expect(document.getElementById('js-info-panel').classList.contains('open')).toBe(false);
+    expect(document.getElementById('js-info-panel')!.classList.contains('open')).toBe(false);
   });
 });
 

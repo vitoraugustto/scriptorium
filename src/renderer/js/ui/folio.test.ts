@@ -82,23 +82,23 @@ describe('refreshFolio', () => {
   test('populates folio-text group with letter content', () => {
     State.addLetters(50);
     refreshFolio();
-    const g = document.getElementById('js-folio-text');
+    const g = document.getElementById('js-folio-text')!;
     expect(g.children.length).toBeGreaterThan(0);
   });
 
   test('is a no-op when letter count unchanged', () => {
     State.addLetters(30);
     refreshFolio();
-    const innerHTML1 = document.getElementById('js-folio-text').innerHTML;
+    const innerHTML1 = document.getElementById('js-folio-text')!.innerHTML;
     refreshFolio();
-    const innerHTML2 = document.getElementById('js-folio-text').innerHTML;
+    const innerHTML2 = document.getElementById('js-folio-text')!.innerHTML;
     expect(innerHTML1).toBe(innerHTML2);
   });
 
   test('capital letter has opacity 0 when no s_capital upgrade', () => {
     State.addLetters(50);
     refreshFolio();
-    const capLetter = document.getElementById('js-cap-letter');
+    const capLetter = document.getElementById('js-cap-letter')!;
     expect(capLetter.getAttribute('opacity')).toBe('0');
   });
 });
@@ -109,7 +109,7 @@ describe('red word rendering', () => {
     State.setPageCapacity(200);
     State.addLetters(100);
     refreshFolio();
-    const g = document.getElementById('js-folio-text');
+    const g = document.getElementById('js-folio-text')!;
     expect(g.children.length).toBeGreaterThan(0);
     expect(g.innerHTML.length).toBeGreaterThan(0);
   });
@@ -122,7 +122,7 @@ describe('clearFolio', () => {
     State.reset();
     State.setPageCapacity(100);
     clearFolio();
-    const g = document.getElementById('js-folio-text');
+    const g = document.getElementById('js-folio-text')!;
     expect(g.children.length).toBe(0);
   });
 });

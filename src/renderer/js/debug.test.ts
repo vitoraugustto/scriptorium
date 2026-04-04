@@ -80,14 +80,14 @@ describe('Debug.init', () => {
   });
 
   test('panel is closed initially', () => {
-    const panel = document.querySelector('.debug-panel');
+    const panel = document.querySelector('.debug-panel')!;
     expect(panel.classList.contains('open')).toBe(false);
   });
 
   test('panel opens on debug button click', () => {
     const btn = document.querySelector('.debug-btn') as HTMLElement;
     btn.click();
-    const panel = document.querySelector('.debug-panel');
+    const panel = document.querySelector('.debug-panel')!;
     expect(panel.classList.contains('open')).toBe(true);
   });
 
@@ -95,7 +95,7 @@ describe('Debug.init', () => {
     const btn = document.querySelector('.debug-btn') as HTMLElement;
     btn.click();
     document.dispatchEvent(new Event('click'));
-    const panel = document.querySelector('.debug-panel');
+    const panel = document.querySelector('.debug-panel')!;
     expect(panel.classList.contains('open')).toBe(false);
   });
 });
@@ -114,7 +114,7 @@ describe('Debug.refreshLabels', () => {
     const btn = document.querySelector('.debug-btn') as HTMLElement;
     btn.click();
     Debug.refreshLabels();
-    const panel = document.querySelector('.debug-panel');
+    const panel = document.querySelector('.debug-panel')!;
     expect(panel.classList.contains('open')).toBe(true);
   });
 

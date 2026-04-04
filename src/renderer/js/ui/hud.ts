@@ -72,7 +72,7 @@ const spawnFloat = (x: number, y: number, html: string, cls = 'dn'): void => {
   el.innerHTML = html;
   el.style.cssText = `left:${x - 14 + Math.random() * 28}px;top:${y - 8}px`;
   document.body.appendChild(el);
-  createIcons({ nodes: [el], icons: { Coins, Gem } });
+  createIcons({ root: el, icons: { Coins, Gem } });
   setTimeout(() => el.remove(), 880);
 };
 

@@ -5,12 +5,12 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "strict": false,
-    "noImplicitAny": false,
+    "strict": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "composite": true,
-    "outDir": "out/renderer"
+    "outDir": "out/renderer",
+    "types": ["vite/client", "vitest/globals"]
   },
   "include": ["src/renderer/**/*"]
 }

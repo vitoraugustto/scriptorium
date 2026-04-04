@@ -26,13 +26,13 @@ describe('GOLD_UPGRADES', () => {
   });
 
   test('Goose Quill has clickAdd effect', () => {
-    const quill = GOLD_UPGRADES.find(u => u.id === 'g_quill');
+    const quill = GOLD_UPGRADES.find(u => u.id === 'g_quill')!;
     expect(quill).toBeDefined();
     expect(quill.effect).toBe('clickAdd');
   });
 
   test('Parchment Ruling has pageAdd effect and max 10', () => {
-    const ruling = GOLD_UPGRADES.find(u => u.id === 'g_ruling');
+    const ruling = GOLD_UPGRADES.find(u => u.id === 'g_ruling')!;
     expect(ruling).toBeDefined();
     expect(ruling.effect).toBe('pageAdd');
     expect(ruling.max).toBe(10);

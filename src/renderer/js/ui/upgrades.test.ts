@@ -32,21 +32,21 @@ describe('refreshUpgrades', () => {
 
   test('locked class when cannot afford gold upgrade', () => {
     refreshUpgrades(noop, noop);
-    const firstRow = document.querySelector('#list-dn .upgrade-row');
+    const firstRow = document.querySelector('#list-dn .upgrade-row')!;
     expect(firstRow.classList.contains('u-locked')).toBe(true);
   });
 
   test('no locked class when can afford gold upgrade', () => {
-    const quill = Config.GOLD_UPGRADES.find(u => u.id === 'g_quill');
+    const quill = Config.GOLD_UPGRADES.find(u => u.id === 'g_quill')!;
     State.addGold(quill.baseCost);
     refreshUpgrades(noop, noop);
-    const firstRow = document.querySelector('#list-dn .upgrade-row');
+    const firstRow = document.querySelector('#list-dn .upgrade-row')!;
     expect(firstRow.classList.contains('u-locked')).toBe(false);
   });
 
   test('clicking a gold row calls onGold callback', () => {
     const onGold = vi.fn();
-    const quill = Config.GOLD_UPGRADES.find(u => u.id === 'g_quill');
+    const quill = Config.GOLD_UPGRADES.find(u => u.id === 'g_quill')!;
     State.addGold(quill.baseCost);
     refreshUpgrades(onGold, noop);
     const firstRow = document.querySelector('#list-dn .upgrade-row') as HTMLElement;
@@ -56,7 +56,7 @@ describe('refreshUpgrades', () => {
 
   test('clicking a salt row calls onSalt callback', () => {
     const onSalt = vi.fn();
-    const benefice = Config.SALT_UPGRADES.find(u => u.id === 's_benefice');
+    const benefice = Config.SALT_UPGRADES.find(u => u.id === 's_benefice')!;
     State.addSalt(benefice.baseCost);
     refreshUpgrades(noop, onSalt);
     const firstRow = document.querySelector('#list-salt .upgrade-row') as HTMLElement;
@@ -65,22 +65,22 @@ describe('refreshUpgrades', () => {
   });
 
   test('maxed gold upgrade shows done text', () => {
-    const quill = Config.GOLD_UPGRADES.find(u => u.id === 'g_quill');
+    const quill = Config.GOLD_UPGRADES.find(u => u.id === 'g_quill')!;
     for (let i = 0; i < quill.max; i++) State.levelUpGold('g_quill');
     refreshUpgrades(noop, noop);
-    const firstRow = document.querySelector('#list-dn .upgrade-row');
+    const firstRow = document.querySelector('#list-dn .upgrade-row')!;
     expect(firstRow.classList.contains('u-maxed')).toBe(true);
   });
 
   test('upgrade name uses i18n translation', () => {
     refreshUpgrades(noop, noop);
-    const firstRow = document.querySelector('#list-dn .u-name');
+    const firstRow = document.querySelector('#list-dn .u-name')!;
     expect(firstRow.textContent).toBe('Goose Quill');
   });
 
   test('salt upgrade locked when cannot afford', () => {
     refreshUpgrades(noop, noop);
-    const firstSaltRow = document.querySelector('#list-salt .upgrade-row');
+    const firstSaltRow = document.querySelector('#list-salt .upgrade-row')!;
     expect(firstSaltRow.classList.contains('u-locked')).toBe(true);
   });
 });
