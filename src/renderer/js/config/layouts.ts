@@ -1,4 +1,5 @@
 import type { SlotDef, RuleDef, FolioLayout } from '../ui/folio/folio.types';
+import type { ColDef, LayoutOpts } from './layouts.types';
 
 // ── Folio geometry (SVG viewBox 210×300) ─────────────────────
 const _FS  = 6.2;
@@ -11,8 +12,6 @@ const _YB  = 276;
 const _GAP = 14;
 const _ROW_GAP = 12;
 
-interface ColDef { frac: number; rows: number; }
-interface LayoutOpts { xCapEnd?: number; }
 
 const makeLayout = (id: string, colDefs: ColDef[], opts: LayoutOpts = {}): FolioLayout => {
   const totalFrac = colDefs.reduce((s, c) => s + c.frac, 0);

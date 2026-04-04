@@ -45,14 +45,14 @@ const refreshStats = (): void => {
   const lpp = State.getPageCapacity();
   const pagePct  = (s.letters / lpp * 100).toFixed(1);
   const codexPct = Math.min((s.currentPage - 1) / Config.PAGES_PER_CODEX * 100, 100);
-  ($('js-prog-page') as HTMLElement).style.width  = pagePct + '%';
-  ($('js-prog-codex') as HTMLElement).style.width = codexPct + '%';
+  $('js-prog-page').style.width  = pagePct + '%';
+  $('js-prog-codex').style.width = codexPct + '%';
   $('js-prog-page-stat').textContent  = `${fmt(s.letters)} / ${fmt(lpp)}`;
   $('js-prog-codex-stat').textContent =
     `p. ${Math.min(s.currentPage, Config.PAGES_PER_CODEX).toLocaleString()} / ${Config.PAGES_PER_CODEX.toLocaleString()}`;
 
   const can = State.canBind();
-  ($('js-codex-btn') as HTMLButtonElement).disabled = !can;
+  document.querySelector<HTMLButtonElement>('#js-codex-btn')!.disabled = !can;
   const left = Math.max(0, Config.PAGES_PER_CODEX - s.currentPage + 1);
   $('js-codex-note').textContent = can
     ? I18n.t('CODEX_READY', fmtSalt(s.codices + 1))

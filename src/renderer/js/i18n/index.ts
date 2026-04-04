@@ -1,10 +1,7 @@
 import en from './en';
 import ptBR from './pt-BR';
 
-type LocaleKey = string;
-type LocaleMap = Record<LocaleKey, string>;
-
-const LOCALES: Record<string, LocaleMap> = { en, 'pt-BR': ptBR };
+const LOCALES: Record<string, Record<string, string>> = { en, 'pt-BR': ptBR };
 let _locale: string = (typeof localStorage !== 'undefined' ? localStorage.getItem('lang') : null) || 'en';
 
 const t = (key: string, ...args: (string | number)[]): string => {

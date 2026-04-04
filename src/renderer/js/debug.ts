@@ -1,3 +1,4 @@
+import type { Icons, CreateIconsOptions } from 'lucide';
 import Env from './env';
 import State from './state';
 import Upgrades from './upgrades';
@@ -5,10 +6,10 @@ import UI from './ui/index';
 import Main from './main';
 import I18n from './i18n/index';
 
-type CreateIcons = (opts?: object) => void;
+type CreateIcons = (opts?: CreateIconsOptions) => void;
 
 let _createIcons: CreateIcons = () => {};
-let _icons: object = {};
+let _icons: Icons = {};
 
 const _refresh = (): void => { Main.refresh(); };
 
@@ -157,7 +158,7 @@ const refreshLabels = (): void => {
   if (wasOpen) _getPanel().classList.add('open');
 };
 
-const init = (createIcons: CreateIcons = () => {}, icons: object = {}): void => {
+const init = (createIcons: CreateIcons = () => {}, icons: Icons = {}): void => {
   _createIcons = createIcons;
   _icons = icons;
 
