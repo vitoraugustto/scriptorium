@@ -1,5 +1,5 @@
-import type { GameState } from './types';
-import Config from './config/index';
+import type { GameState } from './state.types';
+import Config from '../config/index';
 
 let _lettersPerPage = 0;
 

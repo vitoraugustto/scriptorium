@@ -1,7 +1,7 @@
 import { createIcons, Coins, Gem } from 'lucide';
-import Config from '../config/index';
-import State from '../state';
-import I18n from '../i18n/index';
+import Config from '../../config/index';
+import State from '../../state';
+import I18n from '../../i18n/index';
 
 const fmt = (n: number): string => {
   n = Math.floor(n);

@@ -1,4 +1,4 @@
-import type { GoldUpgrade, SaltUpgrade } from './types';
+import type { GoldUpgrade, SaltUpgrade } from './config/upgrades/upgrades.types';
 import Config from './config/index';
 import State from './state';
 import Upgrades from './upgrades';

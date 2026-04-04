@@ -1,6 +1,6 @@
-import type { FolioLayout } from '../types';
-import Config from '../config/index';
-import State from '../state';
+import type { FolioLayout } from './folio.types';
+import Config from '../../config/index';
+import State from '../../state';
 
 const svgEl = <K extends keyof SVGElementTagNameMap>(tag: K): SVGElementTagNameMap[K] =>
   document.createElementNS('http://www.w3.org/2000/svg', tag) as SVGElementTagNameMap[K];

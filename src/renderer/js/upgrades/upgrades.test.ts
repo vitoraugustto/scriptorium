@@ -1,5 +1,5 @@
-import Config from './config/index';
-import State from './state';
+import Config from '../config/index';
+import State from '../state';
 import Upgrades from './upgrades';
 
 beforeEach(() => {

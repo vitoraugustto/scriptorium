@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { vi } from 'vitest';
 import { refreshUpgrades } from './upgrades';
-import State from '../state';
-import Config from '../config/index';
+import State from '../../state';
+import Config from '../../config/index';
 
 const DOM_FIXTURE = `
   <div id="list-dn"></div>

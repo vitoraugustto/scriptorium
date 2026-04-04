@@ -1,4 +1,4 @@
-import type { GoldUpgrade, SaltUpgrade } from '../types';
+import type { GoldUpgrade, SaltUpgrade } from './upgrades.types';
 
 const GOLD_UPGRADES: GoldUpgrade[] = [
   {

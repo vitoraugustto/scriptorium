@@ -25,7 +25,7 @@ const DOM_FIXTURE = `
 `;
 
 import { fmt, fmtSalt, refreshStats, refreshStaticLabels, flashKey, showToast, spawnFloat } from './hud';
-import State from '../state';
+import State from '../../state';
 
 beforeEach(() => {
   document.body.innerHTML = DOM_FIXTURE;

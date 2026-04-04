@@ -1,10 +1,10 @@
 import { createIcons, Gem } from 'lucide';
-import type { GoldUpgrade, SaltUpgrade } from '../types';
-import Config from '../config/index';
-import State from '../state';
-import UpgradesLogic from '../upgrades';
-import I18n from '../i18n/index';
-import { fmt, fmtSalt } from './hud';
+import type { GoldUpgrade, SaltUpgrade } from '../../config/upgrades/upgrades.types';
+import Config from '../../config/index';
+import State from '../../state';
+import UpgradesLogic from '../../upgrades';
+import I18n from '../../i18n/index';
+import { fmt, fmtSalt } from '../hud';
 
 const $ = (id: string): HTMLElement => document.getElementById(id)!;
 

@@ -1,6 +1,6 @@
-import type { GoldUpgrade, SaltUpgrade } from './types';
-import Config from './config/index';
-import State from './state';
+import type { GoldUpgrade, SaltUpgrade } from '../config/upgrades/upgrades.types';
+import Config from '../config/index';
+import State from '../state';
 
 const goldCost = (u: GoldUpgrade): number =>
   Math.floor(u.baseCost * Math.pow(u.costMult, State.get().goldLevels[u.id]));

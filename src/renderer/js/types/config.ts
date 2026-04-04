@@ -1,5 +1,5 @@
-import type { FolioLayout } from './folio';
-import type { GoldUpgrade, SaltUpgrade } from './upgrade';
+import type { FolioLayout } from '../ui/folio/folio.types';
+import type { GoldUpgrade, SaltUpgrade } from '../config/upgrades/upgrades.types';
 
 export interface GameConfig {
   PAGES_PER_CODEX: number;

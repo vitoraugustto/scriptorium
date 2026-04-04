@@ -1,4 +1,4 @@
-import type { SlotDef, RuleDef, FolioLayout } from '../types';
+import type { SlotDef, RuleDef, FolioLayout } from '../ui/folio/folio.types';
 
 // ── Folio geometry (SVG viewBox 210×300) ─────────────────────
 const _FS  = 6.2;
