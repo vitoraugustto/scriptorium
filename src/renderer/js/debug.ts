@@ -136,23 +136,25 @@ const _makeActionSection = (s: ActionSection, divided: boolean): HTMLElement => 
 };
 
 let _panel: HTMLElement | null = null;
+const _getPanel = (): HTMLElement => _panel as HTMLElement;
 
 const _buildPanel = (): void => {
   if (_panel) _panel.remove();
-  _panel = document.createElement('div');
-  _panel.className = 'popup-panel debug-panel';
-  _inputSections.forEach((s) => _panel!.appendChild(_makeInputSection(s, true)));
-  _panel.appendChild(_makeActionSection(_layoutSection, true));
-  _panel.appendChild(_makeActionSection(_resetSection, false));
-  _panel.addEventListener('click', (e) => e.stopPropagation());
-  document.body.appendChild(_panel);
+  const panel = document.createElement('div');
+  panel.className = 'popup-panel debug-panel';
+  _inputSections.forEach((s) => panel.appendChild(_makeInputSection(s, true)));
+  panel.appendChild(_makeActionSection(_layoutSection, true));
+  panel.appendChild(_makeActionSection(_resetSection, false));
+  panel.addEventListener('click', (e) => e.stopPropagation());
+  document.body.appendChild(panel);
+  _panel = panel;
 };
 
 const refreshLabels = (): void => {
   if (!_panel) return;
   const wasOpen = _panel.classList.contains('open');
   _buildPanel();
-  if (wasOpen) _panel!.classList.add('open');
+  if (wasOpen) _getPanel().classList.add('open');
 };
 
 const init = (createIcons: CreateIcons = () => {}, icons: object = {}): void => {
@@ -169,11 +171,11 @@ const init = (createIcons: CreateIcons = () => {}, icons: object = {}): void => 
 
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
-    const open = _panel!.classList.toggle('open');
+    const open = _getPanel().classList.toggle('open');
     btn.classList.toggle('open', open);
   });
   document.addEventListener('click', () => {
-    _panel!.classList.remove('open');
+    _getPanel().classList.remove('open');
     btn.classList.remove('open');
   });
 

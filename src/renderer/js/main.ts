@@ -88,13 +88,13 @@ const startLoop = (): void => {
 const init = (onLocaleChange: () => void = () => {}): void => {
   document.addEventListener('keydown', handleKey);
 
-  (document.getElementById('js-codex-btn') as HTMLButtonElement).addEventListener('click', handleBind);
+  document.getElementById('js-codex-btn')!.addEventListener('click', handleBind);
 
-  document.querySelectorAll('.stab').forEach(btn => {
+  document.querySelectorAll<HTMLElement>('.stab').forEach(btn => {
     btn.addEventListener('click', () => {
-      _activeTab = (btn as HTMLElement).dataset['tab']!;
-      document.querySelectorAll('.stab').forEach(b =>
-        b.classList.toggle('active', (b as HTMLElement).dataset['tab'] === _activeTab));
+      _activeTab = btn.dataset['tab'] ?? '';
+      document.querySelectorAll<HTMLElement>('.stab').forEach(b =>
+        b.classList.toggle('active', b.dataset['tab'] === _activeTab));
       document.getElementById('panel-dn')!.classList.toggle('active', _activeTab === 'dn');
       document.getElementById('panel-salt')!.classList.toggle('active', _activeTab === 'salt');
     });
@@ -113,7 +113,7 @@ const init = (onLocaleChange: () => void = () => {}): void => {
   });
   infoPanel.addEventListener('click', e => e.stopPropagation());
 
-  const langSelect = document.getElementById('js-lang-select') as HTMLSelectElement;
+  const langSelect = document.querySelector<HTMLSelectElement>('#js-lang-select')!;
   langSelect.value = I18n.getLocale();
   langSelect.addEventListener('change', () => {
     I18n.setLocale(langSelect.value);

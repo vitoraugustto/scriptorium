@@ -22,8 +22,8 @@ const fmtSalt = (n: number): string => {
 const $ = (id: string): HTMLElement => document.getElementById(id)!;
 
 const refreshStaticLabels = (): void => {
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    (el as HTMLElement).textContent = I18n.t((el as HTMLElement).dataset['i18n']!);
+  document.querySelectorAll<HTMLElement>('[data-i18n]').forEach(el => {
+    el.textContent = I18n.t(el.dataset['i18n'] ?? '');
   });
 };
 

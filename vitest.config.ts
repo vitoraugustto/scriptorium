@@ -14,6 +14,7 @@ export default defineConfig({
         'src/renderer/js/config/index.ts',
         'src/renderer/js/i18n/en.ts',
         'src/renderer/js/i18n/pt-BR.ts',
+        'src/renderer/js/types/**',
       ],
       thresholds: {
         lines: 90,

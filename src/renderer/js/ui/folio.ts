@@ -6,6 +6,7 @@ const svgEl = <K extends keyof SVGElementTagNameMap>(tag: K): SVGElementTagNameM
   document.createElementNS('http://www.w3.org/2000/svg', tag) as SVGElementTagNameMap[K];
 
 const $ = (id: string): HTMLElement => document.getElementById(id)!;
+const $svg = (id: string): SVGSVGElement => document.getElementById(id) as unknown as SVGSVGElement;
 
 // ── Active layout ────────────────────────────────────────────
 let _layout: FolioLayout = Config.FOLIO_LAYOUTS.single;
@@ -54,7 +55,7 @@ const _nextWord = (): string => {
 const _FONT_SIZE = 6.2;
 
 const _measureText = (str: string): number => {
-  const svg = $('js-folio') as unknown as SVGSVGElement;
+  const svg = $svg('js-folio');
   const t = svgEl('text');
   t.setAttribute('font-family', 'IM Fell English, serif');
   t.setAttribute('font-size', String(_FONT_SIZE));
