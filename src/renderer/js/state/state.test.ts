@@ -215,6 +215,44 @@ describe('State.recomputeSalt', () => {
     State.recomputeSalt();
     expect(State.get().saltBonus).toBeCloseTo(2.0);
   });
+
+  test('goldPerPage accumulates with Prepared Vellum levels', () => {
+    State.levelUpSalt('s_vellum');
+    State.levelUpSalt('s_vellum');
+    State.recomputeSalt();
+    expect(State.get().goldPerPage).toBe(2);
+  });
+
+  test('startingGold accumulates with Provisions levels', () => {
+    State.levelUpSalt('s_provisions');
+    State.recomputeSalt();
+    expect(State.get().startingGold).toBe(50);
+  });
+});
+
+describe('State.addLetters with goldPerPage', () => {
+  test('goldPerPage increases gold earned per page', () => {
+    State.levelUpSalt('s_vellum');
+    State.recomputeSalt();
+    const { gold } = State.addLetters(100);
+    expect(gold).toBe(Math.ceil((1 + 1) * 1)); // (1 + goldPerPage=1) * saltBonus=1
+  });
+});
+
+describe('State.bindCodex with startingGold', () => {
+  test('starts next codex with startingGold when Provisions is leveled', () => {
+    State.addLetters(100 * 300);
+    State.levelUpSalt('s_provisions');
+    State.recomputeSalt();
+    State.bindCodex();
+    expect(State.get().gold).toBe(50);
+  });
+
+  test('starts with 0 gold when no Provisions', () => {
+    State.addLetters(100 * 300);
+    State.bindCodex();
+    expect(State.get().gold).toBe(0);
+  });
 });
 
 describe('State.setPageCapacity / getPageCapacity', () => {

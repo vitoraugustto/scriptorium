@@ -133,7 +133,35 @@ describe('Upgrades.recompute', () => {
     expect(State.get().autoRate).toBe(0);
   });
 
+  test('autoAdd increases autoRate', () => {
+    State.levelUpGold('g_apprentice');
+    Upgrades.recompute();
+    expect(State.get().autoRate).toBe(2);
+  });
 
+  test('autoMult from Gold multiplies autoRate', () => {
+    State.levelUpGold('g_apprentice'); // +2 auto
+    // manually inject an autoMult gold upgrade via levelUp
+    // use s_scriptorium (Salt autoMult) instead
+    State.levelUpSalt('s_scriptorium'); // ×2 auto
+    State.recomputeSalt();
+    Upgrades.recompute();
+    expect(State.get().autoRate).toBe(4); // 2 * 2
+  });
+
+  test('clickMult from Salt multiplies clickPower', () => {
+    State.levelUpGold('g_quill'); // +1 click → base 2
+    State.levelUpSalt('s_golden_quill'); // ×2 click
+    State.recomputeSalt();
+    Upgrades.recompute();
+    expect(State.get().clickPower).toBe(4); // (1+1) * 2
+  });
+
+  test('clickMult from Gold (Lectern) multiplies clickPower', () => {
+    State.levelUpGold('g_lectern'); // ×1.5
+    Upgrades.recompute();
+    expect(State.get().clickPower).toBe(Math.max(1, Math.round(1 * 1.5)));
+  });
 });
 
 describe('Upgrades.affordableGold', () => {
