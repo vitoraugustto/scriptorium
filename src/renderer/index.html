@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scriptorium</title>
+<link href="https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ── TITLEBAR ── -->
+<div class="titlebar">
+  <select class="lang-select" id="js-lang-select">
+    <option value="en">EN</option>
+    <option value="pt-BR">PT-BR</option>
+  </select>
+  <span class="titlebar-title">Scriptorium</span>
+  <div class="titlebar-right">
+    <div class="title-resource">
+      <i data-lucide="coins" class="tr-icon dn"></i>
+      <span class="tr-val dn" id="js-gold">5</span>
+    </div>
+    <div class="title-resource">
+      <i data-lucide="gem" class="tr-icon salt"></i>
+      <span class="tr-val salt" id="js-salt">0 g</span>
+    </div>
+    <button class="popup-btn info-btn" id="js-info-btn">i</button>
+    <div class="popup-panel info-panel" id="js-info-panel">
+      <div class="popup-row">
+        <span class="popup-lbl">Title</span>
+        <span class="popup-val" id="js-scribe-title">Novice Scribe</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-lbl"><i data-lucide="coins" class="popup-lbl-icon dn"></i> <span data-i18n="LABEL_DENARII">Denarii</span></span>
+        <span class="popup-val dn" id="js-info-gold">5</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-lbl"><i data-lucide="gem" class="popup-lbl-icon salt"></i> <span data-i18n="LABEL_SALT">Salt</span></span>
+        <span class="popup-val salt" id="js-info-salt">0 g</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-lbl" data-i18n="LABEL_CODICES">Codices</span>
+        <span class="popup-val" id="js-codex-count">0</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-lbl" data-i18n="LABEL_LETTERS_PER_S">Letters/s</span>
+        <span class="popup-val" id="js-auto-rate">0</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-lbl" data-i18n="LABEL_PER_KEYSTROKE">Per keystroke</span>
+        <span class="popup-val" id="js-info-click">1</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-lbl" data-i18n="LABEL_SALT_BONUS">Salt bonus</span>
+        <span class="popup-val salt" id="js-info-bonus">+0%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── APP BODY ── -->
+<div class="app-body">
+
+  <!-- FOLIO AREA -->
+  <div class="folio-area">
+
+    <div class="progress-block">
+      <div class="prog-row">
+        <span class="prog-lbl" data-i18n="LABEL_PAGE">Page</span>
+        <div class="prog-track"><div class="prog-fill page" id="js-prog-page"></div></div>
+        <span class="prog-stat" id="js-prog-page-stat">0 / 1,200</span>
+      </div>
+      <div class="prog-row">
+        <span class="prog-lbl" data-i18n="LABEL_CODEX">Codex</span>
+        <div class="prog-track"><div class="prog-fill codex" id="js-prog-codex"></div></div>
+        <span class="prog-stat" id="js-prog-codex-stat">p. 1 / 300</span>
+      </div>
+    </div>
+
+    <!-- folio SVG — 7:10 real codex proportion -->
+    <div class="folio-wrap">
+      <svg id="js-folio" viewBox="0 0 210 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <clipPath id="folio-clip">
+            <rect x="0" y="0" width="210" height="300"/>
+          </clipPath>
+          <radialGradient id="folio-age" cx="50%" cy="50%" r="70%">
+            <stop offset="0%"   stop-color="#f5ead0" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#c8a870" stop-opacity="0.22"/>
+          </radialGradient>
+        </defs>
+        <!-- depth/shadow page -->
+        <rect x="3" y="3" width="206" height="296" fill="#d4c490" stroke="#9a8060" stroke-width="0.7"/>
+        <!-- main folio -->
+        <rect x="0" y="0" width="206" height="296" fill="#ede0be" stroke="#3d3018" stroke-width="1"/>
+        <!-- aging vignette -->
+        <rect x="0" y="0" width="206" height="296" fill="url(#folio-age)"/>
+        <!-- rules rendered by ui.js based on active layout -->
+        <g id="js-folio-rules" clip-path="url(#folio-clip)"></g>
+        <!-- illuminated capital — hidden until salt upgrade -->
+        <rect id="js-cap-box" x="26" y="24" width="30" height="30"
+          fill="rgba(248,238,210,0)" stroke="rgba(184,146,10,0)" stroke-width="0.8"/>
+        <text id="js-cap-letter" x="41" y="49" text-anchor="middle"
+          font-family="Uncial Antiqua, serif" font-size="30"
+          fill="rgba(139,58,26,0)" opacity="0">V</text>
+        <!-- text layer -->
+        <g id="js-folio-text" clip-path="url(#folio-clip)"></g>
+      </svg>
+    </div>
+
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="sidebar-tabs">
+      <button class="stab active" id="stab-dn"   data-tab="dn"><i data-lucide="coins"></i> <span data-i18n="TAB_DENARII">Denarii</span></button>
+      <button class="stab salt"   id="stab-salt" data-tab="salt"><i data-lucide="gem"></i> <span data-i18n="TAB_SALT">Salt</span></button>
+    </div>
+
+    <div class="sidebar-panel active" id="panel-dn">
+      <div class="upgrades-list" id="list-dn"></div>
+    </div>
+
+    <div class="sidebar-panel" id="panel-salt">
+      <div class="upgrades-list" id="list-salt"></div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="codex-btn" id="js-codex-btn" disabled>Bind the Codex</button>
+      <div class="codex-note" id="js-codex-note">complete 300 pages to bind</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="key-flash" id="js-flash"></div>
+<div class="toast"     id="js-toast"></div>
+
+<script type="module" src="js/app.ts"></script>
+</body>
+</html>
