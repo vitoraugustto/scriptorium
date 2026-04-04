@@ -6,4 +6,8 @@ export const testIds = {
   folio:        'folio',
   folioText:    'folio-text',
   progressPage: 'progress-page',
+  tabDn:        'tab-dn',
+  tabSalt:      'tab-salt',
+  listDn:       'list-dn',
+  listSalt:     'list-salt',
 } as const;

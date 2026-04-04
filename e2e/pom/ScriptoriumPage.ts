@@ -43,8 +43,16 @@ export class ScriptoriumPage {
     return parseInt(text.replace(/[^0-9]/g, ''), 10);
   }
 
+  async readSalt(): Promise<string> {
+    return this.page.getByTestId(testIds.salt).innerText();
+  }
+
+  async readCodexCount(): Promise<number> {
+    const text = await this.page.locator('#js-codex-count').innerText();
+    return parseInt(text, 10);
+  }
+
   async waitForGold(): Promise<void> {
-    await this.page.getByTestId(testIds.gold).waitFor({ state: 'visible' });
     await this.page.waitForFunction(
       (id: string) => {
         const el = document.querySelector(`[data-testid="${id}"]`);
@@ -55,9 +63,28 @@ export class ScriptoriumPage {
     );
   }
 
+  async waitForGoldChange(previous: number): Promise<void> {
+    await this.page.waitForFunction(
+      ({ id, prev }: { id: string; prev: number }) => {
+        const el = document.querySelector(`[data-testid="${id}"]`);
+        return el ? parseInt(el.textContent!.replace(/[^0-9]/g, ''), 10) > prev : false;
+      },
+      { id: testIds.gold, prev: previous },
+      { timeout: 5_000 },
+    );
+  }
+
   async readPageProgress(): Promise<number> {
     return this.page.getByTestId(testIds.progressPage).evaluate(
       (el: HTMLElement) => parseFloat(el.style.width),
     );
+  }
+
+  async clickFirstUpgrade(list: 'listDn' | 'listSalt'): Promise<void> {
+    await this.page.getByTestId(testIds[list]).locator('.upgrade-row').first().click();
+  }
+
+  async switchTab(tab: 'tabDn' | 'tabSalt'): Promise<void> {
+    await this.page.getByTestId(testIds[tab]).click();
   }
 }
