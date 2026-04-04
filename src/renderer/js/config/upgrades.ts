@@ -1,4 +1,6 @@
-const GOLD_UPGRADES = [
+import type { GoldUpgrade, SaltUpgrade } from '../types';
+
+const GOLD_UPGRADES: GoldUpgrade[] = [
   {
     id: 'g_quill',
     name: 'Goose Quill',
@@ -21,7 +23,7 @@ const GOLD_UPGRADES = [
   },
 ];
 
-const SALT_UPGRADES = [
+const SALT_UPGRADES: SaltUpgrade[] = [
   {
     id: 's_benefice',
     name: 'Benefice',

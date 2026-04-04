@@ -1,7 +1,7 @@
-const PAGES_PER_CODEX = 300;
-const AUTO_TICK_MS = 50;
+const PAGES_PER_CODEX: number = 300;
+const AUTO_TICK_MS: number = 50;
 
-const SCRIBE_TITLES = [
+const SCRIBE_TITLES: string[] = [
   "Novice Scribe",
   "Skilled Copyist",
   "Master Calligrapher",
@@ -10,7 +10,7 @@ const SCRIBE_TITLES = [
   "Eternal Archivist",
 ];
 
-const LOREM = [
+const LOREM: string[] = [
   "veritas", "lumen", "anima", "gloria", "pax", "virtus", "sapientia",
   "fides", "gratia", "caritas", "honor", "lex", "cor", "vita", "mors",
   "terra", "caelum", "aqua", "ignis", "spiritus", "tempus", "memoria",
