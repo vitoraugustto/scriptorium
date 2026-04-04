@@ -22,26 +22,60 @@ Codex complete   →  earns Salt (permanent)
 ## File structure
 
 ```
-index.html
-style.css
-js/
-  config/
-    constants.js      — PAGES_PER_CODEX, AUTO_TICK_MS, SCRIBE_TITLES, LOREM
-    layouts.js        — makeLayout, FOLIO_LAYOUTS, FOLIO
-    upgrades.js       — GOLD_UPGRADES, SALT_UPGRADES definitions
-    index.js          — re-exports all config as frozen default export
-  ui/
-    folio.js          — SVG rendering, line cache, countRedWords
-    hud.js            — fmt, fmtSalt, refreshStats, toasts, floats
-    upgrades.js       — refreshUpgrades (upgrade shop UI)
-    index.js          — re-exports all UI as default export
-  env.js              — DEBUG flag
-  state.js            — single source of truth, controlled mutations only
-  upgrades.js         — cost calculation, buy logic, stat derivation
-  main.js             — keyboard input, game loop, tab switching, init
-  debug.js            — debug panel (only when Env.DEBUG)
-  app.js              — entry point: imports main + debug, calls init
+src/
+  main/
+    index.ts          — Electron main process, BrowserWindow
+  preload/
+    index.ts          — contextBridge, exposes electronAPI to renderer
+  renderer/
+    index.html
+    style.css
+    env.d.ts          — Window.electronAPI type declaration
+    js/
+      config/
+        constants.ts        — PAGES_PER_CODEX, AUTO_TICK_MS, SCRIBE_TITLES, LOREM
+        layouts.ts          — makeLayout, FOLIO_LAYOUTS, FOLIO
+        layouts.types.ts    — ColDef, LayoutOpts
+        index.ts            — re-exports all config as frozen default export
+        upgrades/
+          upgrades.ts       — GOLD_UPGRADES, SALT_UPGRADES definitions
+          upgrades.types.ts — GoldUpgrade, SaltUpgrade
+          index.ts
+      ui/
+        folio/
+          folio.ts          — SVG rendering, line cache, countRedWords
+          folio.types.ts    — SlotDef, RuleDef, FolioLayout
+          index.ts
+        hud/
+          hud.ts            — fmt, fmtSalt, refreshStats, toasts, floats
+          index.ts
+        upgrades/
+          upgrades.ts       — refreshUpgrades (upgrade shop UI)
+          index.ts
+        index.ts            — re-exports all UI as default export
+      state/
+        state.ts            — single source of truth, controlled mutations only
+        state.types.ts      — GameState
+        index.ts
+      upgrades/
+        upgrades.ts         — cost calculation, buy logic, stat derivation
+        index.ts
+      types/
+        config.ts           — GameConfig (aggregates types from modules)
+        index.ts
+      i18n/
+        index.ts            — t(), setLocale(), getLocale()
+        en.ts               — English strings
+        pt-BR.ts            — Portuguese strings
+      env.ts                — DEBUG flag (import.meta.env.DEV || electronAPI.isDebug)
+      main.ts               — keyboard input, game loop, tab switching, init
+      debug.ts              — debug panel (only when Env.DEBUG)
+      app.ts                — entry point: imports main + debug, calls init
+  test/
+    setup.ts              — vitest global setup (SVGElement.getComputedTextLength mock)
 ```
+
+Each module follows the pattern: `module.ts` + `module.types.ts` + `module.test.ts` + `index.ts` (barrel).
 
 Module load order: `env → config → state → upgrades → ui → main → debug → app`
 
@@ -51,9 +85,9 @@ Module load order: `env → config → state → upgrades → ui → main → de
 
 **Input:** `a–z` and spacebar count. `e.repeat`, modifier keys, and mouse clicks are ignored.
 
-**Folio:** SVG 210×300 (7:10 proportion). No visible ruled lines — blank vellum. Text rendered line-by-line — completed lines at opacity 0.76, current line at 0.38. Line cache is append-only, never reordered.
+**Folio:** SVG 210×300 (7:10 proportion). No visible ruled lines — blank vellum. Text rendered line-by-line — completed lines at opacity 0.76, current line at 0.38. Line cache is append-only, never reordered. Text measurement uses `getComputedTextLength()` — mocked in tests since jsdom does not implement SVG layout.
 
-**Folio layouts:** Three layouts rotate randomly on each page turn: `single` (1 column), `double` (2 columns), `quad` (2×2 blocks). Defined via `makeLayout(id, colDefs, opts)` in `config/layouts.js` — adding new layouts is one line. Page capacity (letters per page) is measured at runtime by dry-running `_fitLine` across all slots; no hardcoded value.
+**Folio layouts:** Three layouts rotate randomly on each page turn: `single` (1 column), `double` (2 columns), `quad` (2×2 blocks). Defined via `makeLayout(id, colDefs, opts)` in `config/layouts.ts` — adding new layouts is one line. Page capacity (letters per page) is measured at runtime by dry-running `_fitLine` across all slots; no hardcoded value.
 
 **Currencies:**
 - Denarii per page = `ceil((1 + goldPerPage) * saltBonus) + redWordCount`
@@ -62,19 +96,18 @@ Module load order: `env → config → state → upgrades → ui → main → de
 
 **Upgrades — two trees:**
 
-Denarii (reset each codex): built one at a time. Current: Goose Quill (`clickAdd` +1/level, max 10, base 5 Đ), Parchment Ruling (max 10, base 10 Đ): renders 1% of words in red per level; each red word on the page earns +1 Đ when the page turns
+Denarii (reset each codex): Goose Quill (`clickAdd` +1/level, max 10, base 5 Đ), Parchment Ruling (max 10, base 10 Đ): renders 1% of words in red per level; each red word on the page earns +1 Đ when the page turns
 
-Salt (permanent): Salt Cellar (+0.3 saltBonus/level), Scribe's Provisions (starting Đ), Prepared Vellum (+Đ/page via `goldPerPage`), Eternal Scriptorium (2x auto), Golden Quill (2x click), Illuminated Capital, Golden Capital
+Salt (permanent): Benefice (+10% saltBonus/level)
 
 **Game loop:** `setInterval` every 50ms. Auto adds `autoRate / 20` letters per tick.
-
-**Illuminated Capital:** unlocked via Salt. `s_capital` shows rust ink letter; `s_capital2` adds gold border. First 3 lines narrow to flow beside it.
 
 ---
 
 ## Roadmap
 
-- [ ] Electron setup (main process, BrowserWindow, packaging)
+- [x] Electron setup (main process, BrowserWindow)
+- [x] Vite + TypeScript migration (electron-vite 5, strict mode, 90%+ coverage)
 - [ ] Save/load (electron-store or JSON via fs)
 - [ ] Sound (quill scratch, page turn, codex bind)
 - [ ] Codex completion animation
@@ -91,12 +124,13 @@ Salt (permanent): Salt Cellar (+0.3 saltBonus/level), Scribe's Provisions (start
 - No emojis anywhere in code or UI
 - No comments unless logic is non-obvious
 - All code in English — UI text is also English
+- TypeScript strict mode — no `any`, no `as unknown as X` outside of typed helpers
 
 ## Testing
 
-- Test files live next to their source file (e.g. `state.test.js` beside `state.js`)
-- Only pure logic is tested (config, state, upgrades) — DOM/browser code is not
-- Coverage runs with every `yarn test` and must stay above 90%
+- Test files live next to their source file (`module.test.ts` beside `module.ts`)
+- Both pure logic and DOM/UI code are tested
+- Coverage runs with every `yarn test` and must stay above 90% (branches: 75%)
 - When closing a feature, ask the user whether to write tests before committing
 
 ## Git workflow
