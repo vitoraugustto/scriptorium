@@ -19,17 +19,17 @@
   <div class="titlebar-right">
     <div class="title-resource">
       <i data-lucide="coins" class="tr-icon dn"></i>
-      <span class="tr-val dn" id="js-gold">5</span>
+      <span class="tr-val dn" id="js-gold" data-testid="gold">5</span>
     </div>
     <div class="title-resource">
       <i data-lucide="gem" class="tr-icon salt"></i>
-      <span class="tr-val salt" id="js-salt">0 g</span>
+      <span class="tr-val salt" id="js-salt" data-testid="salt">0 g</span>
     </div>
     <button class="popup-btn info-btn" id="js-info-btn">i</button>
     <div class="popup-panel info-panel" id="js-info-panel">
       <div class="popup-row">
         <span class="popup-lbl">Title</span>
-        <span class="popup-val" id="js-scribe-title">Novice Scribe</span>
+        <span class="popup-val" id="js-scribe-title" data-testid="scribe-title">Novice Scribe</span>
       </div>
       <div class="popup-row">
         <span class="popup-lbl"><i data-lucide="coins" class="popup-lbl-icon dn"></i> <span data-i18n="LABEL_DENARII">Denarii</span></span>
@@ -68,7 +68,7 @@
     <div class="progress-block">
       <div class="prog-row">
         <span class="prog-lbl" data-i18n="LABEL_PAGE">Page</span>
-        <div class="prog-track"><div class="prog-fill page" id="js-prog-page"></div></div>
+        <div class="prog-track"><div class="prog-fill page" id="js-prog-page" data-testid="progress-page"></div></div>
         <span class="prog-stat" id="js-prog-page-stat">0 / 1,200</span>
       </div>
       <div class="prog-row">
@@ -80,7 +80,7 @@
 
     <!-- folio SVG — 7:10 real codex proportion -->
     <div class="folio-wrap">
-      <svg id="js-folio" viewBox="0 0 210 300" xmlns="http://www.w3.org/2000/svg">
+      <svg id="js-folio" data-testid="folio" viewBox="0 0 210 300" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <clipPath id="folio-clip">
             <rect x="0" y="0" width="210" height="300"/>
@@ -105,7 +105,7 @@
           font-family="Uncial Antiqua, serif" font-size="30"
           fill="rgba(139,58,26,0)" opacity="0">V</text>
         <!-- text layer -->
-        <g id="js-folio-text" clip-path="url(#folio-clip)"></g>
+        <g id="js-folio-text" data-testid="folio-text" clip-path="url(#folio-clip)"></g>
       </svg>
     </div>
 
@@ -129,7 +129,7 @@
     </div>
 
     <div class="sidebar-footer">
-      <button class="codex-btn" id="js-codex-btn" disabled>Bind the Codex</button>
+      <button class="codex-btn" id="js-codex-btn" data-testid="codex-btn" disabled>Bind the Codex</button>
       <div class="codex-note" id="js-codex-note">complete 300 pages to bind</div>
     </div>
 
