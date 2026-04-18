@@ -26,30 +26,24 @@ export class ScriptoriumPage {
     for (let i = 0; i < n; i++) await this.page.keyboard.press(key);
   }
 
-  // Dispatches keydown events directly in the renderer — use for large counts
   async dispatchKeydowns(key: string, n: number): Promise<void> {
-    await this.page.evaluate(
-      ({ key, n }: { key: string; n: number }) => {
-        for (let i = 0; i < n; i++) {
-          document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
-        }
-      },
-      { key, n },
-    );
+    const BATCH = 2_000;
+    for (let i = 0; i < n; i += BATCH) {
+      const count = Math.min(BATCH, n - i);
+      await this.page.evaluate(
+        ({ key, count }: { key: string; count: number }) => {
+          for (let j = 0; j < count; j++) {
+            document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+          }
+        },
+        { key, count },
+      );
+    }
   }
 
   async readGold(): Promise<number> {
     const text = await this.page.getByTestId(testIds.gold).innerText();
     return parseInt(text.replace(/[^0-9]/g, ''), 10);
-  }
-
-  async readSalt(): Promise<string> {
-    return this.page.getByTestId(testIds.salt).innerText();
-  }
-
-  async readCodexCount(): Promise<number> {
-    const text = await this.page.locator('#js-codex-count').innerText();
-    return parseInt(text, 10);
   }
 
   async waitForGold(): Promise<void> {
@@ -59,17 +53,6 @@ export class ScriptoriumPage {
         return el ? parseInt(el.textContent!.replace(/[^0-9]/g, ''), 10) > 0 : false;
       },
       testIds.gold,
-      { timeout: 5_000 },
-    );
-  }
-
-  async waitForGoldChange(previous: number): Promise<void> {
-    await this.page.waitForFunction(
-      ({ id, prev }: { id: string; prev: number }) => {
-        const el = document.querySelector(`[data-testid="${id}"]`);
-        return el ? parseInt(el.textContent!.replace(/[^0-9]/g, ''), 10) > prev : false;
-      },
-      { id: testIds.gold, prev: previous },
       { timeout: 5_000 },
     );
   }
