@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
-import { ScriptoriumPage } from './pom/ScriptoriumPage';
-import { testIds } from './selectors';
+import { ScriptoriumPage } from '../pages/ScriptoriumPage';
+import { testIds } from '../fixtures/selectors';
 
 let pom: ScriptoriumPage;
 

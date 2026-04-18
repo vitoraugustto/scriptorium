@@ -1,6 +1,6 @@
 import { _electron as electron, ElectronApplication, Page } from 'playwright';
 import path from 'path';
-import { testIds } from '../selectors';
+import { testIds } from '../fixtures/selectors';
 
 export class ScriptoriumPage {
   app!: ElectronApplication;
