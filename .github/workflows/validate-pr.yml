@@ -1,51 +1,83 @@
-name: Validate PR description
+name: Validate PR
 
 on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
 
 jobs:
-  validate:
+  unit:
     runs-on: ubuntu-latest
     steps:
-      - name: Check PR body
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn test
+
+  validate:
+    runs-on: ubuntu-latest
+    needs: unit
+    if: always()
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Validate and update PR description
         uses: actions/github-script@v7
         with:
           script: |
-            const body = context.payload.pull_request.body || '';
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            const unitPassed = '${{ needs.unit.result }}' === 'success';
 
             const errors = [];
 
-            // What changed — must have content after the heading
+            // What changed
             const whatChanged = body.match(/## What changed\s+([\s\S]*?)(?=\n##|$)/);
             if (!whatChanged || whatChanged[1].trim().length === 0) {
               errors.push('**What changed** is empty.');
             }
 
-            // Type — at least one checkbox must be checked
+            // Type — at least one [x]
             const typeSection = body.match(/## Type\s+([\s\S]*?)(?=\n##|$)/);
             if (!typeSection || !/- \[x\]/i.test(typeSection[1])) {
               errors.push('**Type** must have at least one option checked.');
             }
 
-            // Changes — must have at least one non-empty bullet
+            // Changes — at least one bullet
             const changesSection = body.match(/## Changes\s+([\s\S]*?)(?=\n##|$)/);
             if (!changesSection || !/^- .+/m.test(changesSection[1])) {
               errors.push('**Changes** must have at least one item.');
             }
 
-            // Test plan — all 3 checkboxes must be present and each either checked or unchecked (not missing)
+            // Test plan — all 3 items must be present
             const testPlanSection = body.match(/## Test plan\s+([\s\S]*?)(?=\n##|$)/);
             if (!testPlanSection) {
               errors.push('**Test plan** section is missing.');
             } else {
               const tp = testPlanSection[1];
-              const hasUnit = /unit tests pass/i.test(tp);
-              const hasE2E = /e2e tests pass/i.test(tp);
-              const hasManual = /manually tested/i.test(tp);
-              if (!hasUnit || !hasE2E || !hasManual) {
-                errors.push('**Test plan** must include all 3 items (unit, E2E, manually tested).');
-              }
+              if (!/unit tests pass/i.test(tp)) errors.push('**Test plan** is missing the unit tests item.');
+              if (!/e2e tests pass/i.test(tp))  errors.push('**Test plan** is missing the E2E tests item.');
+              if (!/manually tested/i.test(tp)) errors.push('**Test plan** is missing the manually tested item.');
+            }
+
+            // Auto-update unit test checkbox based on CI result
+            let updatedBody = body.replace(
+              /(- \[)[ x](\] Unit tests pass)/i,
+              `$1${unitPassed ? 'x' : ' '}$2`
+            );
+
+            if (updatedBody !== body) {
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                body: updatedBody,
+              });
             }
 
             if (errors.length > 0) {
