@@ -50,10 +50,11 @@ Read open CodeRabbit comments on the current PR and help address them one by one
      -d '{"query":"mutation{resolveReviewThread(input:{threadId:\"THREAD_NODE_ID\"}){thread{isResolved}}}"}'
    ```
 
-   To find `GITHUB_TOKEN`, check:
+   To get the token:
    ```bash
-   env | grep -i github | grep -i token
+   TOKEN=$(grep GITHUB_CLASSIC_TOKEN .env | cut -d= -f2)
    ```
+   Requires a classic PAT with `public_repo` scope (or `repo` for private repos).
 
 7. Only act on what the user explicitly approves — never auto-resolve all comments.
 
