@@ -35,6 +35,8 @@ Analyze the current branch and open a pull request on GitHub, fully filled out.
    - `title`: generated title
    - `body`: filled template based on `.github/pull_request_template.md`
 
+6. After creating the PR, use `mcp__github__update_issue` with `issue_number` = PR number and `assignees: ["vitoraugustto"]` to assign the PR.
+
 ## Rules
 
 - Never ask the user to fill anything — generate everything from the diff and commits
