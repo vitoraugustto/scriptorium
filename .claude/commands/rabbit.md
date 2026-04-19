@@ -1,4 +1,4 @@
-# Review
+# Rabbit
 
 Read open CodeRabbit comments on the current PR and help address them one by one.
 
@@ -20,11 +20,42 @@ Read open CodeRabbit comments on the current PR and help address them one by one
    - Your assessment: is this already fixed in the code, valid and should be fixed, or safe to dismiss?
 
 5. Wait for the user to decide per comment:
-   - **Fix it** — make the code change, then reply to the comment with `mcp__github__add_issue_comment` explaining what was done
-   - **Dismiss** — reply explaining why it was intentionally ignored
+   - **Fix it** — make the code change, reply inside the thread, then resolve it
+   - **Dismiss** — reply inside the thread explaining why, then resolve it
    - **Skip** — leave it for later, no action
 
-6. Only act on what the user explicitly approves — never auto-resolve all comments.
+6. After the user confirms an action (Fix or Dismiss), use GraphQL to:
+
+   **a. Get the thread node_id from the comment's node_id** (available in `mcp__github__get_pull_request_comments` response as `node_id`):
+   ```bash
+   curl -s -X POST https://api.github.com/graphql \
+     -H "Authorization: bearer $GITHUB_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"query":"query{node(id:\"COMMENT_NODE_ID\"){...on PullRequestReviewComment{pullRequestReviewThread{id isResolved}}}}"}'
+   ```
+
+   **b. Reply inside the thread:**
+   ```bash
+   curl -s -X POST https://api.github.com/graphql \
+     -H "Authorization: bearer $GITHUB_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"query":"mutation{addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:\"THREAD_NODE_ID\",body:\"@coderabbitai REPLY_TEXT\"}){comment{body}}}"}'
+   ```
+
+   **c. Resolve the thread:**
+   ```bash
+   curl -s -X POST https://api.github.com/graphql \
+     -H "Authorization: bearer $GITHUB_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{"query":"mutation{resolveReviewThread(input:{threadId:\"THREAD_NODE_ID\"}){thread{isResolved}}}"}'
+   ```
+
+   To find `GITHUB_TOKEN`, check:
+   ```bash
+   env | grep -i github | grep -i token
+   ```
+
+7. Only act on what the user explicitly approves — never auto-resolve all comments.
 
 ## Rules
 
@@ -33,4 +64,4 @@ Read open CodeRabbit comments on the current PR and help address them one by one
 - CodeRabbit reviews are high signal — treat them seriously, not as noise to dismiss
 - After acting on a comment, commit the fix before moving to the next one
 - Always reply to comments in English
-- Always mention `@coderabbitai` at the start of replies so the bot is notified
+- Always mention `@coderabbitai` at the start of thread replies
