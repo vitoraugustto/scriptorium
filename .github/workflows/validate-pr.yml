@@ -1,0 +1,55 @@
+name: Validate PR description
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR body
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.pull_request.body || '';
+
+            const errors = [];
+
+            // What changed — must have content after the heading
+            const whatChanged = body.match(/## What changed\s+([\s\S]*?)(?=\n##|$)/);
+            if (!whatChanged || whatChanged[1].trim().length === 0) {
+              errors.push('**What changed** is empty.');
+            }
+
+            // Type — at least one checkbox must be checked
+            const typeSection = body.match(/## Type\s+([\s\S]*?)(?=\n##|$)/);
+            if (!typeSection || !/- \[x\]/i.test(typeSection[1])) {
+              errors.push('**Type** must have at least one option checked.');
+            }
+
+            // Changes — must have at least one non-empty bullet
+            const changesSection = body.match(/## Changes\s+([\s\S]*?)(?=\n##|$)/);
+            if (!changesSection || !/^- .+/m.test(changesSection[1])) {
+              errors.push('**Changes** must have at least one item.');
+            }
+
+            // Test plan — all 3 checkboxes must be present and each either checked or unchecked (not missing)
+            const testPlanSection = body.match(/## Test plan\s+([\s\S]*?)(?=\n##|$)/);
+            if (!testPlanSection) {
+              errors.push('**Test plan** section is missing.');
+            } else {
+              const tp = testPlanSection[1];
+              const hasUnit = /unit tests pass/i.test(tp);
+              const hasE2E = /e2e tests pass/i.test(tp);
+              const hasManual = /manually tested/i.test(tp);
+              if (!hasUnit || !hasE2E || !hasManual) {
+                errors.push('**Test plan** must include all 3 items (unit, E2E, manually tested).');
+              }
+            }
+
+            if (errors.length > 0) {
+              core.setFailed(
+                'PR description is incomplete:\n\n' + errors.map(e => `- ${e}`).join('\n')
+              );
+            }
