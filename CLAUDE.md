@@ -135,9 +135,12 @@ Salt (permanent): Benefice (+10% saltBonus/level)
 
 ## Git workflow
 
+- Always work on feature branches — never commit directly to main
 - Commit autonomously when closing a feature, no need to ask
 - Group commits by logical unit, not by file
 - No co-author lines in commit messages
+- When a feature branch is ready, remind the user to run `/pr` — opens the PR on GitHub via MCP
+- When the user confirms a PR was merged into main, remind them to run `/ship` — bumps version, updates CHANGELOG, creates git tag
 
 ---
 
