@@ -33,3 +33,4 @@ Read open CodeRabbit comments on the current PR and help address them one by one
 - CodeRabbit reviews are high signal — treat them seriously, not as noise to dismiss
 - After acting on a comment, commit the fix before moving to the next one
 - Always reply to comments in English
+- Always mention `@coderabbitai` at the start of replies so the bot is notified
