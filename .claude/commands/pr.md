@@ -5,18 +5,21 @@ Analyze the current branch and open a pull request on GitHub, fully filled out.
 ## Steps
 
 1. Get the current branch name:
-   ```
+   ```bash
    git branch --show-current
    ```
+   If the branch is `main`, stop immediately and tell the user to switch to a feature branch before running `/pr`.
 
 2. Get all commits since this branch diverged from main:
-   ```
-   git log main..HEAD --oneline
+   ```bash
+   BASE=$(git merge-base HEAD origin/main || git merge-base HEAD main)
+   git log "$BASE"..HEAD --oneline
    ```
 
 3. Get the full diff:
-   ```
-   git diff main..HEAD
+   ```bash
+   BASE=$(git merge-base HEAD origin/main || git merge-base HEAD main)
+   git diff "$BASE"..HEAD
    ```
 
 4. Based on the commits and diff, determine:

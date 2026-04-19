@@ -7,8 +7,13 @@ Close the current release: bump version, update CHANGELOG.md, commit, and tag.
 1. Read the current version from `package.json`
 
 2. Get commits since the last version tag (or all commits if no tag exists):
-   ```
-   git log $(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)..HEAD --oneline
+   ```bash
+   LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || true)
+   if [ -n "$LAST_TAG" ]; then
+     git log "$LAST_TAG"..HEAD --oneline
+   else
+     git log --oneline
+   fi
    ```
 
 3. Group commits by type:
@@ -49,4 +54,4 @@ Close the current release: bump version, update CHANGELOG.md, commit, and tag.
 
 - Run this on `main` after merging a PR, not on a feature branch
 - Only include user-facing changes in CHANGELOG — omit tests, CI, refactors
-- Do not push — remind the user with 🚀 `git push origin main --tags`
+- Do not push — remind the user to run `git push origin main --tags`
