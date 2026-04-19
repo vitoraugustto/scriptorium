@@ -20,8 +20,8 @@ Read open CodeRabbit comments on the current PR and help address them one by one
    - Your assessment: is this already fixed in the code, valid and should be fixed, or safe to dismiss?
 
 5. Wait for the user to decide per comment:
-   - **Fix it** — make the code change, reply inside the thread, then resolve it
-   - **Dismiss** — reply inside the thread explaining why, then resolve it
+   - **Fix it** — make the code change, commit it, then reply inside the thread explaining what was done, then resolve it. Never resolve before the commit exists.
+   - **Dismiss** — reply inside the thread explaining clearly why the suggestion was intentionally ignored, then resolve it. A reply is mandatory before resolving.
    - **Skip** — leave it for later, no action
 
 6. After the user confirms an action (Fix or Dismiss), use GraphQL to:
