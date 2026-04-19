@@ -41,7 +41,11 @@ Analyze the current branch and open a pull request on GitHub, fully filled out.
 
 - Never ask the user to fill anything — generate everything from the diff and commits
 - Be concise in the body — reviewers read fast
-- If there are no E2E changes, uncheck the E2E test plan item and note it
 - Do not include internal refactors or test-only changes as features
 - After creating the PR, print the PR URL
 - `/pr` is for proposing changes — run `/ship` on main after merging to close a release
+
+### Body format rules
+- **Type**: always render all 5 checkboxes (`Feature`, `Fix`, `Refactor`, `Chore`, `Docs`), mark only the applicable one with `[x]`
+- **Test plan**: always render all 3 checkboxes, mark only the ones that actually ran with `[x]`; if E2E was not run, leave it unchecked — do not add a note or comment explaining why
+- **Notes for reviewer**: only include if there is a genuine tradeoff or non-obvious decision; omit entirely if there is nothing meaningful to say
