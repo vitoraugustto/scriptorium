@@ -1,6 +1,6 @@
 import { _electron as electron, ElectronApplication, Page } from 'playwright';
 import path from 'path';
-import { testIds } from '../selectors';
+import { testIds } from '../fixtures/selectors';
 
 export class ScriptoriumPage {
   app!: ElectronApplication;
@@ -26,16 +26,19 @@ export class ScriptoriumPage {
     for (let i = 0; i < n; i++) await this.page.keyboard.press(key);
   }
 
-  // Dispatches keydown events directly in the renderer — use for large counts
   async dispatchKeydowns(key: string, n: number): Promise<void> {
-    await this.page.evaluate(
-      ({ key, n }: { key: string; n: number }) => {
-        for (let i = 0; i < n; i++) {
-          document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
-        }
-      },
-      { key, n },
-    );
+    const BATCH = 2_000;
+    for (let i = 0; i < n; i += BATCH) {
+      const count = Math.min(BATCH, n - i);
+      await this.page.evaluate(
+        ({ key, count }: { key: string; count: number }) => {
+          for (let j = 0; j < count; j++) {
+            document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+          }
+        },
+        { key, count },
+      );
+    }
   }
 
   async readGold(): Promise<number> {
@@ -44,7 +47,6 @@ export class ScriptoriumPage {
   }
 
   async waitForGold(): Promise<void> {
-    await this.page.getByTestId(testIds.gold).waitFor({ state: 'visible' });
     await this.page.waitForFunction(
       (id: string) => {
         const el = document.querySelector(`[data-testid="${id}"]`);
@@ -59,5 +61,13 @@ export class ScriptoriumPage {
     return this.page.getByTestId(testIds.progressPage).evaluate(
       (el: HTMLElement) => parseFloat(el.style.width),
     );
+  }
+
+  async clickFirstUpgrade(list: 'listDn' | 'listSalt'): Promise<void> {
+    await this.page.getByTestId(testIds[list]).locator('.upgrade-row').first().click();
+  }
+
+  async switchTab(tab: 'tabDn' | 'tabSalt'): Promise<void> {
+    await this.page.getByTestId(testIds[tab]).click();
   }
 }

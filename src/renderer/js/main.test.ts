@@ -188,6 +188,25 @@ describe('Main auto loop', () => {
     vi.useRealTimers();
     expect(State.get().totalLetters).toBe(0);
   });
+
+  test('auto loop completing a page triggers layout change', () => {
+    vi.useFakeTimers();
+    State.setPageCapacity(1);
+    State.setStats({ click: 1, auto: 1000 });
+    vi.advanceTimersByTime(Config.AUTO_TICK_MS);
+    vi.useRealTimers();
+    expect(UI.setLayout).toHaveBeenCalled();
+  });
+
+  test('auto loop shows codex toast when canBind becomes true', () => {
+    vi.useFakeTimers();
+    State.setPageCapacity(1);
+    State.setStats({ click: 1, auto: 1000 });
+    for (let i = 0; i < 300; i++) State.addLetters(1);
+    vi.advanceTimersByTime(Config.AUTO_TICK_MS);
+    vi.useRealTimers();
+    expect(UI.showToast).toHaveBeenCalled();
+  });
 });
 
 import Config from './config/index';

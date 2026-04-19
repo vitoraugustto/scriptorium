@@ -49,13 +49,17 @@ describe('I18n.setLocale / getLocale', () => {
     expect(I18n.getLocale()).toBe('pt-BR');
   });
 
-  test('setLocale persists to localStorage when available', () => {
+  test('setLocale persists to localStorage', () => {
     I18n.setLocale('pt-BR');
-    if (typeof localStorage !== 'undefined') {
-      expect(localStorage.getItem('lang')).toBe('pt-BR');
-    } else {
-      expect(I18n.getLocale()).toBe('pt-BR');
-    }
+    expect(localStorage.getItem('lang')).toBe('pt-BR');
+  });
+
+  test('setLocale works without localStorage', () => {
+    const original = globalThis.localStorage;
+    Object.defineProperty(globalThis, 'localStorage', { value: undefined, configurable: true });
+    expect(() => I18n.setLocale('pt-BR')).not.toThrow();
+    expect(I18n.getLocale()).toBe('pt-BR');
+    Object.defineProperty(globalThis, 'localStorage', { value: original, configurable: true });
   });
 });
 
