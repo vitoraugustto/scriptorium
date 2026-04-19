@@ -32,3 +32,4 @@ Read open CodeRabbit comments on the current PR and help address them one by one
 - Be honest about tradeoffs — if a suggestion would add complexity for little gain, say so
 - CodeRabbit reviews are high signal — treat them seriously, not as noise to dismiss
 - After acting on a comment, commit the fix before moving to the next one
+- Always reply to comments in English
