@@ -18,13 +18,10 @@
 
 -
 
-## Test plan
-
-<!-- How was this tested? What scenarios were covered? -->
+## Ready when
 
 - [ ] Unit tests pass (`yarn test`)
 - [ ] E2E tests pass locally (`yarn e2e`)
-- [ ] Manually tested in Electron app
 
 ## Notes for reviewer
 

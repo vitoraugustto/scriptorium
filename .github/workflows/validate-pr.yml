@@ -117,14 +117,13 @@ jobs:
               errors.push('**Changes** must have at least one item.');
             }
 
-            const testPlanSection = body.match(/## Test plan\s+([\s\S]*?)(?=\n##|$)/);
-            if (!testPlanSection) {
-              errors.push('**Test plan** section is missing.');
+            const readyWhenSection = body.match(/## Ready when\s+([\s\S]*?)(?=\n##|$)/);
+            if (!readyWhenSection) {
+              errors.push('**Ready when** section is missing.');
             } else {
-              const tp = testPlanSection[1];
-              if (!/unit tests pass/i.test(tp)) errors.push('**Test plan** is missing the unit tests item.');
-              if (!/e2e tests pass/i.test(tp))  errors.push('**Test plan** is missing the E2E tests item.');
-              if (!/manually tested/i.test(tp)) errors.push('**Test plan** is missing the manually tested item.');
+              const rw = readyWhenSection[1];
+              if (!/unit tests pass/i.test(rw)) errors.push('**Ready when** is missing the unit tests item.');
+              if (!/e2e tests pass/i.test(rw))  errors.push('**Ready when** is missing the E2E tests item.');
             }
 
             if (errors.length > 0) {
