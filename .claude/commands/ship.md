@@ -31,7 +31,7 @@ Close the current release: bump version, update CHANGELOG.md, commit, tag, and c
 5. Ask the user to confirm the version bump before proceeding.
 
 6. After confirmation:
-   - Update `version` in `package.json`
+   - Update `version` in `package.json` (edit the `"version"` field directly)
    - Prepend to `CHANGELOG.md` using [Keep a Changelog](https://keepachangelog.com) format:
 
 ```markdown
@@ -54,7 +54,7 @@ Close the current release: bump version, update CHANGELOG.md, commit, tag, and c
 
 8. After push confirmation, create the GitHub Release via curl using `GITHUB_CLASSIC_TOKEN` from `.env`:
    ```bash
-   source .env
+   GITHUB_CLASSIC_TOKEN=$(grep '^GITHUB_CLASSIC_TOKEN=' .env | cut -d '=' -f2)
    curl -s -X POST https://api.github.com/repos/vitoraugustto/scriptorium/releases \
      -H "Authorization: bearer $GITHUB_CLASSIC_TOKEN" \
      -H "Content-Type: application/json" \
