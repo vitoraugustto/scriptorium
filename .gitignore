@@ -4,3 +4,4 @@ coverage/
 out/
 dist/
 test-results/
+.env
