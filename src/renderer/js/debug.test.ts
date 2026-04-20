@@ -49,8 +49,8 @@ vi.mock('./upgrades', () => ({
   },
 }));
 
-// Must mock Env.DEBUG = true before importing Debug
-vi.mock('./env', () => ({ default: Object.freeze({ DEBUG: true }) }));
+// Set VITE_DEBUG before importing Debug
+vi.stubEnv('VITE_DEBUG', 'true');
 
 import Debug from './debug';
 import State from './state';
@@ -182,6 +182,28 @@ describe('Debug input sections', () => {
     const goldInput = inputs[0] as HTMLInputElement;
     goldInput.value = '50';
     goldInput.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true }));
+    expect(State.get().gold).toBe(0);
+  });
+});
+
+describe('window.__debug', () => {
+  test('is defined after init', () => {
+    expect(window.__debug).toBeDefined();
+  });
+
+  test('addGold adds gold to state', () => {
+    window.__debug?.addGold(50);
+    expect(State.get().gold).toBe(50);
+  });
+
+  test('addLetters adds letters to state', () => {
+    window.__debug?.addLetters(30);
+    expect(State.get().totalLetters).toBe(30);
+  });
+
+  test('reset clears state', () => {
+    State.addGold(100);
+    window.__debug?.reset();
     expect(State.get().gold).toBe(0);
   });
 });
