@@ -56,7 +56,7 @@ jobs:
           path: playwright-report/
           retention-days: 7
 
-  validate:
+  validate-description:
     runs-on: ubuntu-latest
     needs: [unit, e2e]
     if: always()
