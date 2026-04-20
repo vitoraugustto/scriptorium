@@ -36,21 +36,6 @@ export class ScriptoriumPage {
     for (let i = 0; i < n; i++) await this.page.keyboard.press(key);
   }
 
-  async dispatchKeydowns(key: string, n: number): Promise<void> {
-    const BATCH = 2_000;
-    for (let i = 0; i < n; i += BATCH) {
-      const count = Math.min(BATCH, n - i);
-      await this.page.evaluate(
-        ({ key, count }: { key: string; count: number }) => {
-          for (let j = 0; j < count; j++) {
-            document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
-          }
-        },
-        { key, count },
-      );
-    }
-  }
-
   async readGold(): Promise<number> {
     const text = await this.page.getByTestId(testIds.gold).innerText();
     return parseInt(text.replace(/[^0-9]/g, ''), 10);
