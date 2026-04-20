@@ -24,12 +24,15 @@ Read open CodeRabbit comments on the current PR and help address them one by one
    - **Dismiss** — reply inside the thread explaining clearly why the suggestion was intentionally ignored, then resolve it. A reply is mandatory before resolving.
    - **Skip** — leave it for later, no action
 
-6. After the user confirms an action (Fix or Dismiss), use GraphQL to:
+6. After the user confirms an action (Fix or Dismiss), use GraphQL with `GITHUB_CLASSIC_TOKEN` from `.env` (the fine-grained token cannot resolve threads):
+   ```bash
+   GITHUB_CLASSIC_TOKEN=$(grep '^GITHUB_CLASSIC_TOKEN=' .env | cut -d '=' -f2)
+   ```
 
    **a. Get the thread node_id from the comment's node_id** (available in `mcp__github__get_pull_request_comments` response as `node_id`):
    ```bash
    curl -s -X POST https://api.github.com/graphql \
-     -H "Authorization: bearer $GITHUB_TOKEN" \
+     -H "Authorization: bearer $GITHUB_CLASSIC_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"query":"query{node(id:\"COMMENT_NODE_ID\"){...on PullRequestReviewComment{pullRequestReviewThread{id isResolved}}}}"}'
    ```
@@ -37,7 +40,7 @@ Read open CodeRabbit comments on the current PR and help address them one by one
    **b. Reply inside the thread:**
    ```bash
    curl -s -X POST https://api.github.com/graphql \
-     -H "Authorization: bearer $GITHUB_TOKEN" \
+     -H "Authorization: bearer $GITHUB_CLASSIC_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"query":"mutation{addPullRequestReviewThreadReply(input:{pullRequestReviewThreadId:\"THREAD_NODE_ID\",body:\"@coderabbitai REPLY_TEXT\"}){comment{body}}}"}'
    ```
@@ -45,12 +48,10 @@ Read open CodeRabbit comments on the current PR and help address them one by one
    **c. Resolve the thread:**
    ```bash
    curl -s -X POST https://api.github.com/graphql \
-     -H "Authorization: bearer $GITHUB_TOKEN" \
+     -H "Authorization: bearer $GITHUB_CLASSIC_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"query":"mutation{resolveReviewThread(input:{threadId:\"THREAD_NODE_ID\"}){thread{isResolved}}}"}'
    ```
-
-   Use `GITHUB_CLASSIC_TOKEN` from `.env` for all GraphQL calls — the fine-grained token lacks permission to resolve threads.
 
 7. Only act on what the user explicitly approves — never auto-resolve all comments.
 
