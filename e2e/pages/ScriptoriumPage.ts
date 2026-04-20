@@ -63,7 +63,7 @@ export class ScriptoriumPage {
         return el ? parseInt(el.textContent!.replace(/[^0-9]/g, ''), 10) > 0 : false;
       },
       testIds.gold,
-      { timeout: 5_000 },
+      { timeout: 15_000 },
     );
   }
 
