@@ -1,6 +1,6 @@
 # Ship
 
-Close the current release: bump version, update CHANGELOG.md, commit, and tag.
+Close the current release: bump version, update CHANGELOG.md, commit, tag, and create a GitHub Release.
 
 ## Steps
 
@@ -50,8 +50,25 @@ Close the current release: bump version, update CHANGELOG.md, commit, and tag.
    - Commit both files: `chore: release vX.Y.Z`
    - Create a git tag: `git tag vX.Y.Z`
 
+7. Remind the user to run `git push origin main --tags`, then wait for confirmation that the push is done.
+
+8. After push confirmation, create the GitHub Release via curl using `GITHUB_CLASSIC_TOKEN` from `.env`:
+   ```bash
+   source .env
+   curl -s -X POST https://api.github.com/repos/vitoraugustto/scriptorium/releases \
+     -H "Authorization: bearer $GITHUB_CLASSIC_TOKEN" \
+     -H "Content-Type: application/json" \
+     -d '{
+       "tag_name": "vX.Y.Z",
+       "name": "vX.Y.Z",
+       "body": "<CHANGELOG content for this version>"
+     }' | jq '{html_url, message}'
+   ```
+   Print the release URL when done.
+
 ## Rules
 
 - Run this on `main` after merging a PR, not on a feature branch
 - Only include user-facing changes in CHANGELOG — omit tests, CI, refactors
-- Do not push — remind the user to run `git push origin main --tags`
+- Do not push — remind the user to run `git push origin main --tags` and wait for confirmation before creating the GitHub Release
+- The GitHub Release body should mirror the CHANGELOG entry for this version
