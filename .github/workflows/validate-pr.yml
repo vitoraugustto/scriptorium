@@ -88,6 +88,8 @@ jobs:
             }
 
   validate-description:
+    needs: [update-checkboxes]
+    if: always()
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
