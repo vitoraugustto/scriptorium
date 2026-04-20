@@ -21,7 +21,7 @@
 ## Ready when
 
 - [ ] Unit tests pass (`yarn test`)
-- [ ] E2E tests pass locally (`yarn e2e`)
+- [ ] E2E tests pass locally (`yarn test:e2e`)
 
 ## Notes for reviewer
 
