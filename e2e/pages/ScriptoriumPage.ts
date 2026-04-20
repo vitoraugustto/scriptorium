@@ -2,6 +2,16 @@ import { _electron as electron, ElectronApplication, Page } from 'playwright';
 import path from 'path';
 import { testIds } from '../fixtures/selectors';
 
+declare global {
+  interface Window {
+    __debug?: {
+      addGold: (n: number) => void;
+      addLetters: (n: number) => void;
+      reset: () => void;
+    };
+  }
+}
+
 export class ScriptoriumPage {
   app!: ElectronApplication;
   page!: Page;
@@ -69,5 +79,17 @@ export class ScriptoriumPage {
 
   async switchTab(tab: 'tabDn' | 'tabSalt'): Promise<void> {
     await this.page.getByTestId(testIds[tab]).click();
+  }
+
+  async addGold(n: number): Promise<void> {
+    await this.page.evaluate((n) => window.__debug?.addGold(n), n);
+  }
+
+  async addLetters(n: number): Promise<void> {
+    await this.page.evaluate((n) => window.__debug?.addLetters(n), n);
+  }
+
+  async resetGame(): Promise<void> {
+    await this.page.evaluate(() => window.__debug?.reset());
   }
 }
