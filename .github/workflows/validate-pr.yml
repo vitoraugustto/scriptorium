@@ -35,7 +35,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Install Linux display dependencies
-        run: sudo apt-get install -y xvfb libgconf-2-4 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3 libasound2t64
+        run: sudo apt-get install -y xvfb libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3 libasound2t64
 
       - name: Build and run E2E tests
         run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" yarn e2e
