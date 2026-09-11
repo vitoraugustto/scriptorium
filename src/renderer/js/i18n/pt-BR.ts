@@ -22,6 +22,9 @@ export default {
   TOAST_CODEX_BOUND:    'Códice {0} encadernado, +{1} sal',
   TOAST_UPGRADE_GOLD:   '{0} nível {1}',
   TOAST_UPGRADE_SALT:   '{0} nível permanente {1}',
+  TOAST_SAVE_CORRUPT:   'Seu save não pôde ser lido e foi guardado à parte. Começando um novo códice.',
+  TOAST_SAVE_FUTURE:    'Seu save foi escrito por uma versão mais nova e foi guardado à parte.',
+  TOAST_SAVE_WIPED:     'Arquivo de save apagado',
 
   // Scribe titles
   TITLE_0: 'Escriba Novato',
@@ -54,6 +57,9 @@ export default {
   DEBUG_RESET:             'Reiniciar',
   DEBUG_RESET_BTN:         'Reiniciar todo o progresso',
   DEBUG_APPLY:             'Aplicar',
+  DEBUG_SAVE:              'Save',
+  DEBUG_SAVE_BTN:          'Salvar agora',
+  DEBUG_WIPE_BTN:          'Apagar arquivo de save',
 
   // Upgrades — Sal
   UPGRADE_S_BENEFICE_NAME: 'Benefício',
