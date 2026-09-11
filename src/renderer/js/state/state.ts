@@ -1,4 +1,4 @@
-import type { GameState } from './state.types';
+import type { GameState, PersistedState } from './state.types';
 import Config from '../config/index';
 
 let _lettersPerPage = 0;
@@ -28,6 +28,8 @@ const get = (): GameState => ({
 const addLetters = (n: number, redWordBonus = 0): { pages: number; gold: number } => {
   _d.letters += n; _d.totalLetters += n;
   let pages = 0, gold = 0;
+  // capacity 0 would make the loop condition always true
+  if (_lettersPerPage <= 0) return { pages, gold };
   while (_d.letters >= _lettersPerPage) {
     _d.letters -= _lettersPerPage;
     pages++;
@@ -87,8 +89,35 @@ const reset = (): void => {
   Config.SALT_UPGRADES.forEach(u => { _d.saltLevels[u.id] = 0; });
 };
 
+const serialize = (): PersistedState => ({
+  gold: _d.gold, totalGold: _d.totalGold,
+  salt: _d.salt, totalSalt: _d.totalSalt,
+  letters: _d.letters, totalLetters: _d.totalLetters,
+  currentPage: _d.currentPage, codices: _d.codices,
+  goldLevels: { ..._d.goldLevels },
+  saltLevels: { ..._d.saltLevels },
+});
+
+// reset() first so the level key set always matches current config:
+// ids added since the save default to 0, removed ids are never copied
+const hydrate = (p: PersistedState): void => {
+  reset();
+  _d.gold = p.gold; _d.totalGold = p.totalGold;
+  _d.salt = p.salt; _d.totalSalt = p.totalSalt;
+  _d.letters = p.letters; _d.totalLetters = p.totalLetters;
+  _d.currentPage = p.currentPage; _d.codices = p.codices;
+  Config.GOLD_UPGRADES.forEach(u => {
+    const l = p.goldLevels[u.id];
+    if (typeof l === 'number') _d.goldLevels[u.id] = Math.min(l, u.max);
+  });
+  Config.SALT_UPGRADES.forEach(u => {
+    const l = p.saltLevels[u.id];
+    if (typeof l === 'number') _d.saltLevels[u.id] = Math.min(l, u.max);
+  });
+};
+
 export default {
   get, addLetters, spendGold, spendSalt, addGold, addSalt, setStats,
   levelUpGold, levelUpSalt, canBind, recomputeSalt, bindCodex,
-  setPageCapacity, getPageCapacity, reset,
+  setPageCapacity, getPageCapacity, reset, serialize, hydrate,
 };
