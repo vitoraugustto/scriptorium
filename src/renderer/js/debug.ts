@@ -1,5 +1,4 @@
 import type { Icons, CreateIconsOptions } from 'lucide';
-import Env from './env';
 import State from './state';
 import Upgrades from './upgrades';
 import UI from './ui/index';
@@ -162,7 +161,13 @@ const init = (createIcons: CreateIcons = () => {}, icons: Icons = {}): void => {
   _createIcons = createIcons;
   _icons = icons;
 
-  if (!Env.DEBUG) return;
+  if (import.meta.env.VITE_DEBUG !== 'true') return;
+
+  window.__debug = {
+    addGold:    (n) => { State.addGold(n); Main.refresh(); },
+    addLetters: (n) => { State.addLetters(n); Main.refresh(); },
+    reset:      ()  => { State.reset(); Upgrades.recompute(); UI.clearFolio(); Main.refresh(); },
+  };
 
   const btn = document.createElement('button');
   btn.className = 'popup-btn debug-btn';

@@ -50,5 +50,5 @@ Analyze the current branch and open a pull request on GitHub, fully filled out.
 
 ### Body format rules
 - **Type**: always render all 5 checkboxes (`Feature`, `Fix`, `Refactor`, `Chore`, `Docs`), mark only the applicable one with `[x]`
-- **Test plan**: always render all 3 checkboxes, mark only the ones that actually ran with `[x]`; if E2E was not run, leave it unchecked — do not add a note or comment explaining why
+- **Ready when**: always render both checkboxes (`Unit tests pass`, `E2E tests pass locally`), leave unchecked — CI will auto-check them
 - **Notes for reviewer**: only include if there is a genuine tradeoff or non-obvious decision; omit entirely if there is nothing meaningful to say

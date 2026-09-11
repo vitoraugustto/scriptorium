@@ -1,0 +1,133 @@
+name: Validate PR
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  unit:
+    if: github.event.action != 'edited'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - run: yarn test
+
+  e2e:
+    if: github.event.action != 'edited'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Install Playwright dependencies
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Linux display dependencies
+        run: sudo apt-get install -y xvfb libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3 libasound2t64
+
+      - name: Build and run E2E tests
+        run: VITE_DEBUG=true xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" yarn test:e2e
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots
+          path: test-results/
+          retention-days: 7
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: playwright-report/
+          retention-days: 7
+
+  update-checkboxes:
+    needs: [unit, e2e]
+    if: always() && github.event.action != 'edited'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Update test plan checkboxes
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            const unitPassed = '${{ needs.unit.result }}' === 'success';
+            const e2ePassed = '${{ needs.e2e.result }}' === 'success';
+
+            const updatedBody = body
+              .replace(/(- \[)[ x](\] Unit tests pass)/i, `$1${unitPassed ? 'x' : ' '}$2`)
+              .replace(/(- \[)[ x](\] E2E tests pass locally)/i, `$1${e2ePassed ? 'x' : ' '}$2`);
+
+            if (updatedBody !== body) {
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                body: updatedBody,
+              });
+            }
+
+  validate-description:
+    needs: [update-checkboxes]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Validate PR description
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = pr.body || '';
+            const errors = [];
+
+            const whatChanged = body.match(/## What changed\s+([\s\S]*?)(?=\n##|$)/);
+            if (!whatChanged || whatChanged[1].trim().length === 0) {
+              errors.push('**What changed** is empty.');
+            }
+
+            const typeSection = body.match(/## Type\s+([\s\S]*?)(?=\n##|$)/);
+            if (!typeSection || !/- \[x\]/i.test(typeSection[1])) {
+              errors.push('**Type** must have at least one option checked.');
+            }
+
+            const changesSection = body.match(/## Changes\s+([\s\S]*?)(?=\n##|$)/);
+            if (!changesSection || !/^- .+/m.test(changesSection[1])) {
+              errors.push('**Changes** must have at least one item.');
+            }
+
+            const readyWhenSection = body.match(/## Ready when\s+([\s\S]*?)(?=\n##|$)/);
+            if (!readyWhenSection) {
+              errors.push('**Ready when** section is missing.');
+            } else {
+              const rw = readyWhenSection[1];
+              if (!/unit tests pass/i.test(rw)) errors.push('**Ready when** is missing the unit tests item.');
+              if (!/e2e tests pass/i.test(rw))  errors.push('**Ready when** is missing the E2E tests item.');
+            }
+
+            if (errors.length > 0) {
+              core.setFailed(
+                'PR description is incomplete:\n\n' + errors.map(e => `- ${e}`).join('\n')
+              );
+            }

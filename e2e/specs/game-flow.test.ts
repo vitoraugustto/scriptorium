@@ -27,7 +27,7 @@ test('page progress advances with keystrokes', async () => {
 });
 
 test('completing a page earns gold', async () => {
-  await pom.dispatchKeydowns('a', LETTERS_PER_PAGE);
+  await pom.addLetters(LETTERS_PER_PAGE);
   await pom.waitForGold();
   expect(await pom.readGold()).toBeGreaterThan(0);
 });
