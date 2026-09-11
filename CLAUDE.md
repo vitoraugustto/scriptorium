@@ -150,8 +150,10 @@ Autosave runs on two timers (1s shadow copy to main, 15s durable write), both di
 - Commit autonomously when closing a feature, no need to ask
 - Group commits by logical unit, not by file
 - No co-author lines in commit messages
-- When a feature branch is ready, remind the user to run `/pr` — opens the PR on GitHub via MCP
-- When the user confirms a PR was merged into main, remind them to run `/ship` — bumps version, updates CHANGELOG, creates git tag
+- When a feature branch is ready, remind the user to run `/pr` — opens the PR via the `gh` CLI
+- To release, run the **Release** action on GitHub (Actions → Release → Run workflow) with the PR number and a bump. It refuses unless every check on the PR is green and the description has a filled `What changed` and `Changes`, then merges, bumps `package.json`, writes the CHANGELOG from the PR's `Changes` bullets, tags, and publishes the release
+- `/ship` is the manual fallback for releases that do not come from a single PR
+- GitHub operations use the `gh` CLI — no MCP server is connected, and `GITHUB_CLASSIC_TOKEN` in `.env` is stale
 
 ---
 

@@ -27,18 +27,19 @@ Analyze the current branch and open a pull request on GitHub, fully filled out.
    - **Type**: Feature / Fix / Refactor / Chore / Docs
    - **What changed**: one paragraph explaining what the PR does and why
    - **Changes**: bullet list of meaningful changes (one per logical unit, not per file)
-   - **Test plan**: which tests cover this — check if unit and/or E2E tests were added or modified
    - **Notes for reviewer**: any tradeoffs, non-obvious decisions, or things that need special attention
 
-5. Use the `mcp__github__create_pull_request` tool to open the PR with:
-   - `owner`: `vitoraugustto`
-   - `repo`: `scriptorium`
-   - `head`: current branch name
-   - `base`: `main`
-   - `title`: generated title
-   - `body`: filled template based on `.github/pull_request_template.md`
+5. Write the body to a temp file and open the PR with `gh`:
+   ```bash
+   gh pr create --base main --head "$(git branch --show-current)" \
+     --title "<title>" --body-file /tmp/pr-body.md --assignee vitoraugustto
+   ```
+   Write the body with a heredoc rather than inline, so backticks and quotes survive.
 
-6. After creating the PR, use `mcp__github__update_issue` with `issue_number` = PR number and `assignees: ["vitoraugustto"]` to assign the PR.
+6. Confirm it was created and assigned, then clean up the temp file:
+   ```bash
+   gh pr view <number> --json number,title,state,assignees
+   ```
 
 ## Rules
 
@@ -46,7 +47,8 @@ Analyze the current branch and open a pull request on GitHub, fully filled out.
 - Be concise in the body — reviewers read fast
 - Do not include internal refactors or test-only changes as features
 - After creating the PR, print the PR URL
-- `/pr` is for proposing changes — run `/ship` on main after merging to close a release
+- Use the `gh` CLI, not the GitHub MCP tools — no MCP server is connected to this project
+- `/pr` proposes changes. To release, run the **Release** action on GitHub (Actions → Release → Run workflow) with the PR number and the bump — it merges the PR and publishes the release. `/ship` is the manual fallback.
 
 ### Body format rules
 - **Type**: always render all 5 checkboxes (`Feature`, `Fix`, `Refactor`, `Chore`, `Docs`), mark only the applicable one with `[x]`

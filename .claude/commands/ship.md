@@ -2,6 +2,8 @@
 
 Close the current release: bump version, update CHANGELOG.md, commit, tag, and create a GitHub Release.
 
+**Prefer the Release action.** On GitHub, Actions → Release → Run workflow takes a PR number and a bump, verifies the PR's checks are green, merges it, and does everything below automatically. Use `/ship` only when releasing something that did not come from a single PR, or when the action is unavailable.
+
 ## Steps
 
 1. Read the current version from `package.json`
@@ -52,19 +54,11 @@ Close the current release: bump version, update CHANGELOG.md, commit, tag, and c
 
 7. Remind the user to run `git push origin main --tags`, then wait for confirmation that the push is done.
 
-8. After push confirmation, create the GitHub Release via curl using `GITHUB_CLASSIC_TOKEN` from `.env`:
+8. After push confirmation, create the GitHub Release with `gh`:
    ```bash
-   GITHUB_CLASSIC_TOKEN=$(grep '^GITHUB_CLASSIC_TOKEN=' .env | cut -d '=' -f2)
-   curl -s -X POST https://api.github.com/repos/vitoraugustto/scriptorium/releases \
-     -H "Authorization: bearer $GITHUB_CLASSIC_TOKEN" \
-     -H "Content-Type: application/json" \
-     -d '{
-       "tag_name": "vX.Y.Z",
-       "name": "vX.Y.Z",
-       "body": "<CHANGELOG content for this version>"
-     }' | jq '{html_url, message}'
+   gh release create vX.Y.Z --title "vX.Y.Z" --notes-file /tmp/release-notes.md
    ```
-   Print the release URL when done.
+   Write the notes to a file first (the CHANGELOG entry for this version). Print the release URL when done.
 
 ## Rules
 
@@ -72,3 +66,4 @@ Close the current release: bump version, update CHANGELOG.md, commit, tag, and c
 - Only include user-facing changes in CHANGELOG — omit tests, CI, refactors
 - Do not push — remind the user to run `git push origin main --tags` and wait for confirmation before creating the GitHub Release
 - The GitHub Release body should mirror the CHANGELOG entry for this version
+- Use the `gh` CLI for GitHub operations. `GITHUB_CLASSIC_TOKEN` in `.env` is stale and returns "Bad credentials"
