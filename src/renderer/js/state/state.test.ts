@@ -311,3 +311,103 @@ describe('State.reset', () => {
     expect(State.get().saltBonus).toBe(1.0);
   });
 });
+
+describe('State.serialize', () => {
+  test('includes resources and upgrade levels', () => {
+    State.addGold(50);
+    State.levelUpGold('g_quill');
+    const p = State.serialize();
+    expect(p.gold).toBe(50);
+    expect(p.goldLevels['g_quill']).toBe(1);
+  });
+
+  test('omits derived fields', () => {
+    const p = State.serialize();
+    expect(p).not.toHaveProperty('saltBonus');
+    expect(p).not.toHaveProperty('clickPower');
+    expect(p).not.toHaveProperty('autoRate');
+    expect(p).not.toHaveProperty('goldPerPage');
+    expect(p).not.toHaveProperty('startingGold');
+  });
+
+  test('level maps are copies', () => {
+    const p = State.serialize();
+    p.goldLevels['g_quill'] = 99;
+    expect(State.get().goldLevels['g_quill']).toBe(0);
+  });
+});
+
+describe('State.hydrate', () => {
+  const base = () => ({
+    gold: 10, totalGold: 20,
+    salt: 3, totalSalt: 4,
+    letters: 5, totalLetters: 6,
+    currentPage: 7, codices: 2,
+    goldLevels: {}, saltLevels: {},
+  });
+
+  test('applies resources', () => {
+    State.hydrate(base());
+    const s = State.get();
+    expect(s.gold).toBe(10);
+    expect(s.totalGold).toBe(20);
+    expect(s.salt).toBe(3);
+    expect(s.totalSalt).toBe(4);
+    expect(s.letters).toBe(5);
+    expect(s.totalLetters).toBe(6);
+    expect(s.currentPage).toBe(7);
+    expect(s.codices).toBe(2);
+  });
+
+  test('applies known upgrade levels', () => {
+    State.hydrate({ ...base(), goldLevels: { g_quill: 3 }, saltLevels: { s_benefice: 2 } });
+    expect(State.get().goldLevels['g_quill']).toBe(3);
+    expect(State.get().saltLevels['s_benefice']).toBe(2);
+  });
+
+  test('clamps levels above max', () => {
+    State.hydrate({ ...base(), goldLevels: { g_quill: 999 }, saltLevels: {} });
+    expect(State.get().goldLevels['g_quill']).toBe(10);
+  });
+
+  test('drops unknown upgrade ids', () => {
+    State.hydrate({ ...base(), goldLevels: { not_an_upgrade: 5 }, saltLevels: {} });
+    expect(State.get().goldLevels).not.toHaveProperty('not_an_upgrade');
+  });
+
+  test('defaults ids missing from the save to 0', () => {
+    State.hydrate({ ...base(), goldLevels: { g_quill: 2 }, saltLevels: {} });
+    expect(State.get().goldLevels['g_ruling']).toBe(0);
+  });
+
+  test('clears progress left over from before the load', () => {
+    State.addGold(500);
+    State.levelUpGold('g_ruling');
+    State.hydrate(base());
+    expect(State.get().gold).toBe(10);
+    expect(State.get().goldLevels['g_ruling']).toBe(0);
+  });
+
+  test('does not apply derived fields', () => {
+    State.levelUpSalt('s_benefice');
+    State.recomputeSalt();
+    State.hydrate(base());
+    expect(State.get().saltBonus).toBe(1.0);
+  });
+});
+
+describe('State.addLetters capacity guard', () => {
+  test('does not award pages when capacity is 0', () => {
+    State.setPageCapacity(0);
+    const { pages, gold } = State.addLetters(1000);
+    expect(pages).toBe(0);
+    expect(gold).toBe(0);
+    expect(State.get().currentPage).toBe(1);
+  });
+
+  test('still counts letters when capacity is 0', () => {
+    State.setPageCapacity(0);
+    State.addLetters(10);
+    expect(State.get().totalLetters).toBe(10);
+  });
+});

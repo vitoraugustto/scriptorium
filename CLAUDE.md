@@ -23,14 +23,18 @@ Codex complete   →  earns Salt (permanent)
 
 ```
 src/
+  shared/
+    channels.ts       — IPC channel names (imported by main + preload)
   main/
-    index.ts          — Electron main process, BrowserWindow
+    index.ts          — Electron main process, BrowserWindow, app name/userData
+    persistence/
+      persistence.ts  — atomic save file I/O, IPC handlers, quit flush
   preload/
-    index.ts          — contextBridge, exposes electronAPI to renderer
+    index.ts          — contextBridge, exposes saveAPI to renderer
   renderer/
     index.html
     style.css
-    env.d.ts          — Window.electronAPI type declaration
+    env.d.ts          — Window.saveAPI and Window.__debug type declarations
     js/
       config/
         constants.ts        — PAGES_PER_CODEX, AUTO_TICK_MS, SCRIBE_TITLES, LOREM
@@ -55,10 +59,14 @@ src/
         index.ts            — re-exports all UI as default export
       state/
         state.ts            — single source of truth, controlled mutations only
-        state.types.ts      — GameState
+        state.types.ts      — GameState, PersistedState
         index.ts
       upgrades/
         upgrades.ts         — cost calculation, buy logic, stat derivation
+        index.ts
+      save/
+        save.ts             — envelope, validation, migration, autosave timers
+        save.types.ts       — SaveEnvelope, LoadOutcome, Migration
         index.ts
       types/
         config.ts           — GameConfig (aggregates types from modules)
@@ -67,7 +75,6 @@ src/
         index.ts            — t(), setLocale(), getLocale()
         en.ts               — English strings
         pt-BR.ts            — Portuguese strings
-      env.ts                — DEBUG flag (import.meta.env.DEV || electronAPI.isDebug)
       main.ts               — keyboard input, game loop, tab switching, init
       debug.ts              — debug panel (only when Env.DEBUG)
       app.ts                — entry point: imports main + debug, calls init
@@ -77,7 +84,7 @@ src/
 
 Each module follows the pattern: `module.ts` + `module.types.ts` + `module.test.ts` + `index.ts` (barrel).
 
-Module load order: `env → config → state → upgrades → ui → main → debug → app`
+Module load order: `config → state → upgrades → save → ui → main → debug → app`
 
 ---
 
@@ -94,13 +101,17 @@ Module load order: `env → config → state → upgrades → ui → main → de
 - Salt per codex = codex number (1st = 1g, 2nd = 2g, ...)
 - Player starts with 0 Đ
 
-**Upgrades — two trees:**
-
-Denarii (reset each codex): Goose Quill (`clickAdd` +1/level, max 10, base 5 Đ), Parchment Ruling (max 10, base 10 Đ): renders 1% of words in red per level; each red word on the page earns +1 Đ when the page turns
-
-Salt (permanent): Benefice (+10% saltBonus/level)
+**Upgrades — two trees:** defined in `config/upgrades/upgrades.ts`, each with a stable string `id` and a `max`. Denarii upgrades (Goose Quill, Parchment Ruling, Apprentice Scribe, Brass Lectern) reset on codex bind; Salt upgrades (Benefice, Scribe's Provisions, Prepared Vellum, Eternal Scriptorium, Golden Quill) are permanent. `unlocksAt` gates an upgrade behind a codex count.
 
 **Game loop:** `setInterval` every 50ms. Auto adds `autoRate / 20` letters per tick.
+
+**Save/load:** atomic JSON at `app.getPath('userData')/save.json` (`~/Library/Application Support/Scriptorium` on macOS — `app.setName` is required, otherwise unpackaged Electron uses a folder named "Electron"). Main process owns all `fs` access and is a dumb blob store; the renderer's `save/` module owns the envelope, validation and migration. Three constraints worth knowing:
+
+- **Only resources and upgrade levels are persisted.** Derived values (`saltBonus`, `goldPerPage`, `startingGold`, `clickPower`, `autoRate`) are rebuilt by `State.recomputeSalt()` **then** `Upgrades.recompute()` — that order matters, since `recompute` reads `saltBonus` and `addLetters` reads `goldPerPage`. Rebalancing upgrade values therefore does not invalidate saves.
+- **`UI.initRules()` must run before loading**, because it measures page capacity, and `addLetters` loops on `letters >= capacity` (a capacity of 0 would never terminate; `addLetters` also guards against this).
+- **A save from a newer version is never overwritten** — it is renamed to `save.corrupt-<timestamp>.json` and the game starts fresh, so downgrading cannot destroy progress. Same treatment for unparseable or malformed files.
+
+Autosave runs on two timers (1s shadow copy to main, 15s durable write), both dirty-checked; the final write happens synchronously on `before-quit` and on window close (macOS closes windows without quitting). E2E isolates saves per run via `ELECTRON_USER_DATA`.
 
 ---
 
@@ -108,7 +119,7 @@ Salt (permanent): Benefice (+10% saltBonus/level)
 
 - [x] Electron setup (main process, BrowserWindow)
 - [x] Vite + TypeScript migration (electron-vite 5, strict mode, 90%+ coverage)
-- [ ] Save/load (electron-store or JSON via fs)
+- [x] Save/load (atomic JSON in userData via fs + IPC, versioned schema)
 - [ ] Sound (quill scratch, page turn, codex bind)
 - [ ] Codex completion animation
 - [ ] Stats page (total letters, codices, time played)

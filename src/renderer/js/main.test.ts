@@ -20,6 +20,18 @@ vi.mock('./ui/index', () => ({
   },
 }));
 
+// Mock Save so main tests do not need the IPC bridge
+vi.mock('./save/index', () => ({
+  default: {
+    load: vi.fn(async () => ({ kind: 'fresh' })),
+    flush: vi.fn(async () => {}),
+    wipe: vi.fn(async () => {}),
+    markDirty: vi.fn(),
+    startAutosave: vi.fn(),
+    stopAutosave: vi.fn(),
+  },
+}));
+
 // Mock Upgrades to avoid full recompute dependency
 vi.mock('./upgrades', () => ({
   default: {
@@ -46,11 +58,11 @@ const DOM_FIXTURE = `
 import Main from './main';
 import State from './state';
 
-beforeEach(() => {
+beforeEach(async () => {
   document.body.innerHTML = DOM_FIXTURE;
   State.reset();
   State.setPageCapacity(100);
-  Main.init();
+  await Main.init();
 });
 
 describe('Main keyboard handler', () => {
@@ -142,6 +154,7 @@ describe('Main codex bind', () => {
 
 import I18n from './i18n/index';
 import UI from './ui/index';
+import Save from './save/index';
 
 describe('Main lang select', () => {
   test('changing lang select updates locale', () => {
@@ -152,10 +165,10 @@ describe('Main lang select', () => {
     I18n.setLocale('en');
   });
 
-  test('onLocaleChange callback is called when locale changes', () => {
+  test('onLocaleChange callback is called when locale changes', async () => {
     const cb = vi.fn();
     document.body.innerHTML = DOM_FIXTURE;
-    Main.init(cb);
+    await Main.init(cb);
     const select = document.getElementById('js-lang-select') as HTMLSelectElement;
     select.value = 'pt-BR';
     select.dispatchEvent(new Event('change'));
@@ -236,5 +249,68 @@ describe('Main handleBuyGold / handleBuySalt', () => {
     State.addSalt(100);
     capturedCallbacks.onSalt?.(benefice);
     expect(UI.showToast).toHaveBeenCalled();
+  });
+});
+
+describe('Main init save sequence', () => {
+  test('measures page capacity before loading the save', async () => {
+    // loading letters while capacity is 0 would make addLetters loop forever
+    const initRulesOrder = (UI.initRules as unknown as { mock: { invocationCallOrder: number[] } })
+      .mock.invocationCallOrder[0]!;
+    const loadOrder = (Save.load as unknown as { mock: { invocationCallOrder: number[] } })
+      .mock.invocationCallOrder[0]!;
+    expect(initRulesOrder).toBeLessThan(loadOrder);
+  });
+
+  test('starts autosave and paints before the loop runs', () => {
+    expect(Save.startAutosave).toHaveBeenCalled();
+    expect(UI.refreshStats).toHaveBeenCalled();
+  });
+
+  test('hydrates state from a loaded save', async () => {
+    vi.mocked(Save.load).mockResolvedValueOnce({
+      kind: 'loaded',
+      state: {
+        gold: 77, totalGold: 77,
+        salt: 2, totalSalt: 2,
+        letters: 4, totalLetters: 4,
+        currentPage: 3, codices: 1,
+        goldLevels: {}, saltLevels: {},
+      },
+    });
+    document.body.innerHTML = DOM_FIXTURE;
+    await Main.init();
+    expect(State.get().gold).toBe(77);
+    expect(State.get().currentPage).toBe(3);
+  });
+
+  test('shows a toast when the save was rejected', async () => {
+    vi.mocked(Save.load).mockResolvedValueOnce({ kind: 'rejected', reason: 'parse' });
+    document.body.innerHTML = DOM_FIXTURE;
+    await Main.init();
+    expect(UI.showToast).toHaveBeenCalled();
+  });
+
+  test('shows a toast when the save came from a newer version', async () => {
+    vi.mocked(Save.load).mockResolvedValueOnce({ kind: 'rejected', reason: 'future' });
+    document.body.innerHTML = DOM_FIXTURE;
+    await Main.init();
+    expect(UI.showToast).toHaveBeenCalled();
+  });
+
+  test('does not toast on a clean first run', async () => {
+    vi.mocked(UI.showToast).mockClear();
+    vi.mocked(Save.load).mockResolvedValueOnce({ kind: 'fresh' });
+    document.body.innerHTML = DOM_FIXTURE;
+    await Main.init();
+    expect(UI.showToast).not.toHaveBeenCalled();
+  });
+});
+
+describe('Main marks the save dirty', () => {
+  test('on a keystroke', () => {
+    vi.mocked(Save.markDirty).mockClear();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
+    expect(Save.markDirty).toHaveBeenCalled();
   });
 });

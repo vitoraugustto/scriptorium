@@ -49,11 +49,24 @@ vi.mock('./upgrades', () => ({
   },
 }));
 
+// Mock Save so debug tests do not need the IPC bridge
+vi.mock('./save/index', () => ({
+  default: {
+    load: vi.fn(async () => ({ kind: 'fresh' })),
+    flush: vi.fn(async () => {}),
+    wipe: vi.fn(async () => {}),
+    markDirty: vi.fn(),
+    startAutosave: vi.fn(),
+    stopAutosave: vi.fn(),
+  },
+}));
+
 // Set VITE_DEBUG before importing Debug
 vi.stubEnv('VITE_DEBUG', 'true');
 
 import Debug from './debug';
 import State from './state';
+import Save from './save/index';
 
 const mockCreateIcons = vi.fn();
 const mockIcons = {};
@@ -227,5 +240,87 @@ describe('Debug action sections (layout + reset)', () => {
     const resetBtn = Array.from(actionBtns).find(b => b.textContent === 'Reset all progress') as HTMLElement;
     resetBtn?.click();
     expect(State.get().gold).toBe(0);
+  });
+});
+
+describe('Debug save section', () => {
+  const clickAction = (label: string): void => {
+    const btn = Array.from(document.querySelectorAll('.debug-action'))
+      .find(b => b.textContent === label) as HTMLElement;
+    btn?.click();
+  };
+
+  test('clicking Save now forces a write', () => {
+    vi.mocked(Save.flush).mockClear();
+    clickAction('Save now');
+    expect(Save.flush).toHaveBeenCalledWith(true);
+  });
+
+  test('clicking Delete save file wipes the save', () => {
+    vi.mocked(Save.wipe).mockClear();
+    clickAction('Delete save file');
+    expect(Save.wipe).toHaveBeenCalled();
+  });
+
+  test('reset button also wipes the save file', () => {
+    vi.mocked(Save.wipe).mockClear();
+    clickAction('Reset all progress');
+    expect(Save.wipe).toHaveBeenCalled();
+  });
+});
+
+describe('Debug window hooks for save', () => {
+  test('addGold marks the save dirty', () => {
+    vi.mocked(Save.markDirty).mockClear();
+    window.__debug!.addGold(5);
+    expect(Save.markDirty).toHaveBeenCalled();
+  });
+
+  test('addLetters marks the save dirty', () => {
+    vi.mocked(Save.markDirty).mockClear();
+    window.__debug!.addLetters(5);
+    expect(Save.markDirty).toHaveBeenCalled();
+  });
+
+  test('save hook forces a write', async () => {
+    vi.mocked(Save.flush).mockClear();
+    await window.__debug!.save();
+    expect(Save.flush).toHaveBeenCalledWith(true);
+  });
+
+  test('wipe hook deletes the save', async () => {
+    vi.mocked(Save.wipe).mockClear();
+    await window.__debug!.wipe();
+    expect(Save.wipe).toHaveBeenCalled();
+  });
+
+  test('load hook hydrates a loaded save', async () => {
+    vi.mocked(Save.load).mockResolvedValueOnce({
+      kind: 'loaded',
+      state: {
+        gold: 33, totalGold: 33,
+        salt: 1, totalSalt: 1,
+        letters: 2, totalLetters: 2,
+        currentPage: 5, codices: 0,
+        goldLevels: {}, saltLevels: {},
+      },
+    });
+    await window.__debug!.load();
+    expect(State.get().gold).toBe(33);
+    expect(State.get().currentPage).toBe(5);
+  });
+
+  test('load hook leaves state alone on a fresh load', async () => {
+    State.reset();
+    State.addGold(9);
+    vi.mocked(Save.load).mockResolvedValueOnce({ kind: 'fresh' });
+    await window.__debug!.load();
+    expect(State.get().gold).toBe(9);
+  });
+
+  test('reset hook wipes the save file', () => {
+    vi.mocked(Save.wipe).mockClear();
+    window.__debug!.reset();
+    expect(Save.wipe).toHaveBeenCalled();
   });
 });

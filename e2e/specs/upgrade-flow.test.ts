@@ -11,6 +11,7 @@ test.beforeAll(async () => {
 
 test.afterAll(async () => {
   await pom.close();
+  pom.cleanup();
 });
 
 test('salt tab shows salt upgrade list', async () => {

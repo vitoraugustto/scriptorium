@@ -4,6 +4,7 @@ import Upgrades from './upgrades';
 import UI from './ui/index';
 import Main from './main';
 import I18n from './i18n/index';
+import Save from './save/index';
 
 type CreateIcons = (opts?: CreateIconsOptions) => void;
 
@@ -65,11 +66,32 @@ const _layoutSection: ActionSection = {
   ],
 };
 
+// wipes the file too, otherwise the next autosave resurrects the reset state
+const _resetAll = (): void => {
+  State.reset();
+  State.recomputeSalt();
+  Upgrades.recompute();
+  UI.clearFolio();
+  void Save.wipe();
+};
+
 const _resetSection: ActionSection = {
   titleKey: 'DEBUG_RESET',
   icon: 'rotate-ccw',
   actions: [
-    { labelKey: 'DEBUG_RESET_BTN', fn: () => { State.reset(); Upgrades.recompute(); UI.clearFolio(); } },
+    { labelKey: 'DEBUG_RESET_BTN', fn: _resetAll },
+  ],
+};
+
+const _saveSection: ActionSection = {
+  titleKey: 'DEBUG_SAVE',
+  icon: 'save',
+  actions: [
+    { labelKey: 'DEBUG_SAVE_BTN', fn: () => { void Save.flush(true); } },
+    { labelKey: 'DEBUG_WIPE_BTN', fn: () => {
+      void Save.wipe();
+      UI.showToast(I18n.t('TOAST_SAVE_WIPED'));
+    } },
   ],
 };
 
@@ -144,7 +166,8 @@ const _buildPanel = (): void => {
   panel.className = 'popup-panel debug-panel';
   _inputSections.forEach((s) => panel.appendChild(_makeInputSection(s, true)));
   panel.appendChild(_makeActionSection(_layoutSection, true));
-  panel.appendChild(_makeActionSection(_resetSection, false));
+  panel.appendChild(_makeActionSection(_resetSection, true));
+  panel.appendChild(_makeActionSection(_saveSection, false));
   panel.addEventListener('click', (e) => e.stopPropagation());
   document.body.appendChild(panel);
   _panel = panel;
@@ -164,9 +187,19 @@ const init = (createIcons: CreateIcons = () => {}, icons: Icons = {}): void => {
   if (import.meta.env.VITE_DEBUG !== 'true') return;
 
   window.__debug = {
-    addGold:    (n) => { State.addGold(n); Main.refresh(); },
-    addLetters: (n) => { State.addLetters(n); Main.refresh(); },
-    reset:      ()  => { State.reset(); Upgrades.recompute(); UI.clearFolio(); Main.refresh(); },
+    addGold:    (n) => { State.addGold(n); Save.markDirty(); Main.refresh(); },
+    addLetters: (n) => { State.addLetters(n); Save.markDirty(); Main.refresh(); },
+    reset:      ()  => { _resetAll(); Main.refresh(); },
+    save:       ()  => Save.flush(true),
+    load:       async () => {
+      const outcome = await Save.load();
+      if (outcome.kind === 'loaded') State.hydrate(outcome.state);
+      State.recomputeSalt();
+      Upgrades.recompute();
+      UI.clearFolio();
+      Main.refresh();
+    },
+    wipe:       ()  => Save.wipe(),
   };
 
   const btn = document.createElement('button');

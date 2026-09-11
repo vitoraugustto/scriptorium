@@ -22,6 +22,9 @@ export default {
   TOAST_CODEX_BOUND:    'Codex {0} bound, +{1} salt',
   TOAST_UPGRADE_GOLD:   '{0} level {1}',
   TOAST_UPGRADE_SALT:   '{0} permanent level {1}',
+  TOAST_SAVE_CORRUPT:   'Your save could not be read and was set aside. Starting a new codex.',
+  TOAST_SAVE_FUTURE:    'Your save was written by a newer version and was set aside.',
+  TOAST_SAVE_WIPED:     'Save file deleted',
 
   // Scribe titles
   TITLE_0: 'Novice Scribe',
@@ -54,6 +57,9 @@ export default {
   DEBUG_RESET:             'Reset',
   DEBUG_RESET_BTN:         'Reset all progress',
   DEBUG_APPLY:             'Apply',
+  DEBUG_SAVE:              'Save',
+  DEBUG_SAVE_BTN:          'Save now',
+  DEBUG_WIPE_BTN:          'Delete save file',
 
   // Upgrades — Salt
   UPGRADE_S_BENEFICE_NAME: 'Benefice',
