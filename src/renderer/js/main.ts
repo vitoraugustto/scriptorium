@@ -4,6 +4,7 @@ import State from './state';
 import Upgrades from './upgrades';
 import UI from './ui/index';
 import I18n from './i18n/index';
+import Save from './save/index';
 
 let _activeTab = 'dn';
 
@@ -15,12 +16,14 @@ const refresh = (): void => {
 
 const handleBuyGold = (u: GoldUpgrade): void => {
   if (!Upgrades.buyGold(u)) return;
+  Save.markDirty();
   refresh();
   UI.showToast(I18n.t('TOAST_UPGRADE_GOLD', I18n.t(`UPGRADE_${u.id.toUpperCase()}_NAME`, u.name), State.get().goldLevels[u.id]));
 };
 
 const handleBuySalt = (u: SaltUpgrade): void => {
   if (!Upgrades.buySalt(u)) return;
+  Save.markDirty();
   refresh();
   UI.showToast(I18n.t('TOAST_UPGRADE_SALT', I18n.t(`UPGRADE_${u.id.toUpperCase()}_NAME`, u.name), State.get().saltLevels[u.id]));
 };
@@ -35,6 +38,7 @@ const handleKey = (e: KeyboardEvent): void => {
   const gain = State.get().clickPower;
   const redBonus = UI.countRedWords();
   const { pages, gold } = State.addLetters(gain, redBonus);
+  Save.markDirty();
 
   UI.flashKey();
 
@@ -56,6 +60,7 @@ const handleBind = (): void => {
   if (!State.canBind()) return;
   const saltGain = State.bindCodex();
   Upgrades.recompute();
+  Save.markDirty();
   UI.clearFolio();
   refresh();
   UI.spawnFloat(
@@ -70,9 +75,10 @@ const handleBind = (): void => {
 const startLoop = (): void => {
   setInterval(() => {
     const { autoRate } = State.get();
-    if (autoRate <= 0) return;
+    if (autoRate <= 0) return;          // idle with no scribes: no disk writes
     const autoRedBonus = UI.countRedWords();
     const { pages } = State.addLetters(autoRate / (1000 / Config.AUTO_TICK_MS), autoRedBonus);
+    Save.markDirty();
     if (pages > 0) {
       const layouts = Object.keys(Config.FOLIO_LAYOUTS);
       UI.setLayout(layouts[Math.floor(Math.random() * layouts.length)]);
@@ -85,7 +91,7 @@ const startLoop = (): void => {
 };
 
 // ── Init ─────────────────────────────────────────────────────
-const init = (onLocaleChange: () => void = () => {}): void => {
+const init = async (onLocaleChange: () => void = () => {}): Promise<void> => {
   document.addEventListener('keydown', handleKey);
 
   document.getElementById('js-codex-btn')!.addEventListener('click', handleBind);
@@ -122,11 +128,29 @@ const init = (onLocaleChange: () => void = () => {}): void => {
     refresh();
   });
 
-  Upgrades.recompute();
+  // initRules measures page capacity, which addLetters needs before any
+  // loaded letters are applied; the loop only starts once state is final
   UI.initRules();
+
+  const outcome = await Save.load();
+  let toast = '';
+  if (outcome.kind === 'loaded') {
+    State.hydrate(outcome.state);
+  } else if (outcome.kind === 'rejected') {
+    toast = outcome.reason === 'future' ? I18n.t('TOAST_SAVE_FUTURE') : I18n.t('TOAST_SAVE_CORRUPT');
+  }
+
+  State.recomputeSalt();
+  Upgrades.recompute();
+
   UI.refreshStaticLabels();
+  UI.clearFolio();
   refresh();
+
+  Save.startAutosave();
   startLoop();
+
+  if (toast) UI.showToast(toast);
 };
 
 export default { init, refresh };
