@@ -48,7 +48,7 @@ Analyze the current branch and open a pull request on GitHub, fully filled out.
 - Do not include internal refactors or test-only changes as features
 - After creating the PR, print the PR URL
 - Use the `gh` CLI, not the GitHub MCP tools — no MCP server is connected to this project
-- `/pr` proposes changes. To release, run the **Release** action on GitHub (Actions → Release → Run workflow) with the PR number and the bump — it merges the PR and publishes the release. `/ship` is the manual fallback.
+- `/pr` proposes changes. To release, run the **Release** action on GitHub (Actions → Release → Run workflow) with the PR number and the bump — it merges the PR and publishes the release.
 
 ### Body format rules
 - **Type**: always render all 5 checkboxes (`Feature`, `Fix`, `Refactor`, `Chore`, `Docs`), mark only the applicable one with `[x]`
