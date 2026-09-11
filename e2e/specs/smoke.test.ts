@@ -11,6 +11,7 @@ test.beforeAll(async () => {
 
 test.afterAll(async () => {
   await pom.close();
+  pom.cleanup();
 });
 
 test('window title is Scriptorium', async () => {

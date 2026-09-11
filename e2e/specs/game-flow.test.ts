@@ -13,6 +13,7 @@ test.beforeAll(async () => {
 
 test.afterAll(async () => {
   await pom.close();
+  pom.cleanup();
 });
 
 test('keystroke causes folio text to appear', async () => {
