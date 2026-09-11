@@ -13,4 +13,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Upgrade tree: Goose Quill (clickAdd), Parchment Ruling (red words for bonus Denarii), Benefice (Salt multiplier)
 - Scribe titles that progress with codex count (Novice Scribe → Eternal Archivist)
 - i18n support with English and Portuguese (PT-BR) locales
-- `/pr`, `/ship`, `/rabbit` — Claude Code skills for development workflow
+- `/pr`, `/ship` — Claude Code skills for development workflow
