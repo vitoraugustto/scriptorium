@@ -200,6 +200,7 @@ const init = (createIcons: CreateIcons = () => {}, icons: Icons = {}): void => {
       Main.refresh();
     },
     wipe:       ()  => Save.wipe(),
+    pageCapacity: () => State.getPageCapacity(),
   };
 
   const btn = document.createElement('button');

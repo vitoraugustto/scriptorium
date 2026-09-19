@@ -13,6 +13,7 @@ declare global {
       save: () => Promise<void>;
       load: () => Promise<void>;
       wipe: () => Promise<void>;
+      pageCapacity: () => number;
     };
   }
 }
@@ -108,6 +109,16 @@ export class ScriptoriumPage {
 
   async addLetters(n: number): Promise<void> {
     await this.page.evaluate((n) => window.__debug?.addLetters(n), n);
+  }
+
+  // measured at runtime from font metrics, so it differs per platform
+  async pageCapacity(): Promise<number> {
+    return this.page.evaluate(() => window.__debug?.pageCapacity() ?? 0);
+  }
+
+  async fillPage(): Promise<void> {
+    const capacity = await this.pageCapacity();
+    await this.addLetters(capacity + 1);
   }
 
   async resetGame(): Promise<void> {

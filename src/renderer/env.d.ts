@@ -13,5 +13,6 @@ interface Window {
     save: () => Promise<void>;
     load: () => Promise<void>;
     wipe: () => Promise<void>;
+    pageCapacity: () => number;
   };
 }

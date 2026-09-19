@@ -2,8 +2,6 @@ import { test, expect } from '@playwright/test';
 import { ScriptoriumPage } from '../pages/ScriptoriumPage';
 import { testIds } from '../fixtures/selectors';
 
-const LETTERS_PER_PAGE = 2000; // conservative upper bound for any layout/font
-
 let pom: ScriptoriumPage;
 
 test.beforeAll(async () => {
@@ -28,7 +26,7 @@ test('page progress advances with keystrokes', async () => {
 });
 
 test('completing a page earns gold', async () => {
-  await pom.addLetters(LETTERS_PER_PAGE);
+  await pom.fillPage();
   await pom.waitForGold();
   expect(await pom.readGold()).toBeGreaterThan(0);
 });
