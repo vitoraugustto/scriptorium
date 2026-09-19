@@ -294,6 +294,11 @@ describe('Debug window hooks for save', () => {
     expect(Save.wipe).toHaveBeenCalled();
   });
 
+  test('pageCapacity hook reports the measured capacity', () => {
+    State.setPageCapacity(1234);
+    expect(window.__debug!.pageCapacity()).toBe(1234);
+  });
+
   test('load hook hydrates a loaded save', async () => {
     vi.mocked(Save.load).mockResolvedValueOnce({
       kind: 'loaded',
