@@ -38,24 +38,41 @@ jobs:
           [ "$base" = "main" ]  || { echo "::error::PR #$PR targets $base, not main"; exit 1; }
           [ "$draft" = "false" ]|| { echo "::error::PR #$PR is a draft"; exit 1; }
 
-      - name: Require all checks green
+      - name: Require unit and E2E to have passed on the head commit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ inputs.pr }}
+          REPO: ${{ github.repository }}
         run: |
-          # this job's own check is excluded: it is still running
-          checks=$(gh pr checks "$PR" --json name,state 2>/dev/null || echo '[]')
-          echo "$checks" | jq -r '.[] | "\(.name): \(.state)"'
+          sha=$(gh pr view "$PR" --json headRefOid -q .headRefOid)
+          echo "Head commit: $sha"
 
-          bad=$(echo "$checks" | jq -r '[.[] | select(.state != "SUCCESS" and .state != "SKIPPED" and .state != "NEUTRAL")] | length')
-          total=$(echo "$checks" | jq -r 'length')
+          runs=$(gh api "repos/$REPO/commits/$sha/check-runs" --paginate \
+                   --jq '.check_runs[] | {name, status, conclusion}' | jq -s '.')
+          echo "$runs" | jq -r '.[] | "  \(.name): \(.status)/\(.conclusion // "-")"' | sort
 
-          if [ "$total" -eq 0 ]; then
-            echo "::error::PR #$PR has no checks; refusing to release"
+          # editing a PR description re-runs the workflow with unit and E2E
+          # skipped, so the newest run is not evidence; require a success for
+          # each job somewhere on this commit, and refuse while any still runs
+          running=$(echo "$runs" | jq '[.[] | select(.status != "completed")] | length')
+          if [ "$running" -ne 0 ]; then
+            echo "::error::$running check(s) still running on $sha; wait for them and re-run"
             exit 1
           fi
-          if [ "$bad" -ne 0 ]; then
-            echo "::error::PR #$PR has $bad check(s) not passing; fix them and re-run"
+
+          for job in unit e2e; do
+            ok=$(echo "$runs" | jq --arg j "$job" \
+                 '[.[] | select(.name == $j and .conclusion == "success")] | length')
+            if [ "$ok" -eq 0 ]; then
+              echo "::error::'$job' has no successful run on $sha; push a fix or re-run CI"
+              exit 1
+            fi
+            echo "$job: passed"
+          done
+
+          failed=$(echo "$runs" | jq '[.[] | select(.conclusion == "failure" or .conclusion == "timed_out" or .conclusion == "cancelled")] | length')
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::$failed check(s) failed on $sha"
             exit 1
           fi
 
