@@ -5,6 +5,7 @@ import Upgrades from './upgrades';
 import UI from './ui/index';
 import I18n from './i18n/index';
 import Save from './save/index';
+import Sound from './sound/index';
 
 let _activeTab = 'dn';
 
@@ -17,6 +18,7 @@ const refresh = (): void => {
 const handleBuyGold = (u: GoldUpgrade): void => {
   if (!Upgrades.buyGold(u)) return;
   Save.markDirty();
+  Sound.play('upgrade');
   refresh();
   UI.showToast(I18n.t('TOAST_UPGRADE_GOLD', I18n.t(`UPGRADE_${u.id.toUpperCase()}_NAME`, u.name), State.get().goldLevels[u.id]));
 };
@@ -24,6 +26,7 @@ const handleBuyGold = (u: GoldUpgrade): void => {
 const handleBuySalt = (u: SaltUpgrade): void => {
   if (!Upgrades.buySalt(u)) return;
   Save.markDirty();
+  Sound.play('upgrade');
   refresh();
   UI.showToast(I18n.t('TOAST_UPGRADE_SALT', I18n.t(`UPGRADE_${u.id.toUpperCase()}_NAME`, u.name), State.get().saltLevels[u.id]));
 };
@@ -43,6 +46,7 @@ const handleKey = (e: KeyboardEvent): void => {
   UI.flashKey();
 
   if (pages > 0) {
+    Sound.play('pageTurn');
     const layouts = Object.keys(Config.FOLIO_LAYOUTS);
     UI.setLayout(layouts[Math.floor(Math.random() * layouts.length)]);
     UI.spawnFloat(
@@ -51,6 +55,8 @@ const handleKey = (e: KeyboardEvent): void => {
       `+${UI.fmt(gold)} <i data-lucide="coins" class="float-icon"></i>`, 'dn',
     );
     if (State.canBind()) UI.showToast(I18n.t('TOAST_CODEX_COMPLETE'));
+  } else {
+    Sound.play('quill');
   }
 
   refresh();
@@ -61,6 +67,7 @@ const handleBind = (): void => {
   const saltGain = State.bindCodex();
   Upgrades.recompute();
   Save.markDirty();
+  Sound.play('codexBind');
   UI.clearFolio();
   refresh();
   UI.spawnFloat(
@@ -80,6 +87,7 @@ const startLoop = (): void => {
     const { pages } = State.addLetters(autoRate / (1000 / Config.AUTO_TICK_MS), autoRedBonus);
     Save.markDirty();
     if (pages > 0) {
+      Sound.play('pageTurn');
       const layouts = Object.keys(Config.FOLIO_LAYOUTS);
       UI.setLayout(layouts[Math.floor(Math.random() * layouts.length)]);
       if (State.canBind()) UI.showToast(I18n.t('TOAST_CODEX_COMPLETE'));
@@ -127,6 +135,8 @@ const init = async (onLocaleChange: () => void = () => {}): Promise<void> => {
     onLocaleChange();
     refresh();
   });
+
+  Sound.init();
 
   // initRules measures page capacity, which addLetters needs before any
   // loaded letters are applied; the loop only starts once state is final

@@ -32,6 +32,17 @@ vi.mock('./save/index', () => ({
   },
 }));
 
+// Mock Sound so main tests do not need real audio decoding
+vi.mock('./sound/index', () => ({
+  default: {
+    init: vi.fn(),
+    play: vi.fn(),
+    setVolume: vi.fn(),
+    setMuted: vi.fn(),
+    getSettings: vi.fn(() => ({ volume: 0.6, muted: false })),
+  },
+}));
+
 // Mock Upgrades to avoid full recompute dependency
 vi.mock('./upgrades', () => ({
   default: {
@@ -155,6 +166,7 @@ describe('Main codex bind', () => {
 import I18n from './i18n/index';
 import UI from './ui/index';
 import Save from './save/index';
+import Sound from './sound/index';
 
 describe('Main lang select', () => {
   test('changing lang select updates locale', () => {
@@ -312,5 +324,33 @@ describe('Main marks the save dirty', () => {
     vi.mocked(Save.markDirty).mockClear();
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
     expect(Save.markDirty).toHaveBeenCalled();
+  });
+});
+
+describe('Main sound cues', () => {
+  test('a keystroke plays the quill', () => {
+    vi.mocked(Sound.play).mockClear();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
+    expect(Sound.play).toHaveBeenCalledWith('quill');
+  });
+
+  test('completing a page plays the page turn instead of the quill', () => {
+    vi.mocked(Sound.play).mockClear();
+    State.setPageCapacity(1);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'a' }));
+    expect(Sound.play).toHaveBeenCalledWith('pageTurn');
+    expect(Sound.play).not.toHaveBeenCalledWith('quill');
+  });
+
+  test('binding a codex plays the bind cue', () => {
+    State.setPageCapacity(1);
+    for (let i = 0; i < 300; i++) State.addLetters(1);
+    vi.mocked(Sound.play).mockClear();
+    (document.getElementById('js-codex-btn') as HTMLButtonElement).click();
+    expect(Sound.play).toHaveBeenCalledWith('codexBind');
+  });
+
+  test('init starts the sound module', () => {
+    expect(Sound.init).toHaveBeenCalled();
   });
 });
