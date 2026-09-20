@@ -68,6 +68,10 @@ src/
         save.ts             — envelope, validation, migration, autosave timers
         save.types.ts       — SaveEnvelope, LoadOutcome, Migration
         index.ts
+      sound/
+        sound.ts            — pools, volume, throttling, random slicing
+        sound.types.ts      — SoundId, SoundSpec, SoundSettings
+        index.ts
       types/
         config.ts           — GameConfig (aggregates types from modules)
         index.ts
@@ -105,6 +109,8 @@ Module load order: `config → state → upgrades → save → ui → main → d
 
 **Game loop:** `setInterval` every 50ms. Auto adds `autoRate / 20` letters per tick.
 
+**Sound:** four cues (`quill`, `pageTurn`, `codexBind`, `upgrade`) defined by `SPECS` in `sound/sound.ts`, each with its own gain, element pool and throttle. Files live in `src/renderer/assets/sounds/` as `.m4a`; `assetsInlineLimit: 0` keeps them out of the JS bundle. Two details matter: the quill is one long recording played in short slices from a random offset (so repeated keystrokes never replay the same fragment), and it is throttled to 40ms because auto scribes fire 20x/s. A missing or undecodable file is swallowed, so the game still runs without assets.
+
 **Save/load:** atomic JSON at `app.getPath('userData')/save.json` (`~/Library/Application Support/Scriptorium` on macOS — `app.setName` is required, otherwise unpackaged Electron uses a folder named "Electron"). Main process owns all `fs` access and is a dumb blob store; the renderer's `save/` module owns the envelope, validation and migration. Three constraints worth knowing:
 
 - **Only resources and upgrade levels are persisted.** Derived values (`saltBonus`, `goldPerPage`, `startingGold`, `clickPower`, `autoRate`) are rebuilt by `State.recomputeSalt()` **then** `Upgrades.recompute()` — that order matters, since `recompute` reads `saltBonus` and `addLetters` reads `goldPerPage`. Rebalancing upgrade values therefore does not invalidate saves.
@@ -120,7 +126,7 @@ Autosave runs on two timers (1s shadow copy to main, 15s durable write), both di
 - [x] Electron setup (main process, BrowserWindow)
 - [x] Vite + TypeScript migration (electron-vite 5, strict mode, 90%+ coverage)
 - [x] Save/load (atomic JSON in userData via fs + IPC, versioned schema)
-- [ ] Sound (quill scratch, page turn, codex bind)
+- [x] Sound (quill scratch, page turn, codex bind, upgrade)
 - [ ] Codex completion animation
 - [ ] Stats page (total letters, codices, time played)
 - [ ] Offline progress on load
